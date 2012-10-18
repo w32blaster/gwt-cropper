@@ -14,7 +14,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.HTML;
 
 public class DraggableHandle extends HTML implements 
-		MouseDownHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler, MouseMoveHandler {
+		MouseDownHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler {
 
 	private boolean isDown = false;
 	private IOnGrag onGrag;
@@ -25,7 +25,6 @@ public class DraggableHandle extends HTML implements
 		super("");
 		
 		super.addMouseDownHandler(this);
-		super.addMouseMoveHandler(this);
 		super.addMouseUpHandler(this);
 		super.addMouseOverHandler(this);
 		super.addMouseOutHandler(this);
@@ -43,18 +42,12 @@ public class DraggableHandle extends HTML implements
 	final public void onMouseUp(MouseUpEvent event) {
 		isDown = false;
 		onGrag.resetInitials();
+		System.out.println("Mouse Up. RESET ALL.");
 	}
 
 	final public void onMouseDown(MouseDownEvent event) {
 		isDown = true;
-	}
-
-	public void onMouseMove(MouseMoveEvent event) {
-		
-		if (isDown) {
-			onGrag.onDrag(event.getRelativeX(this.parentEl),
-						event.getRelativeY(this.parentEl));
-		}
+		System.out.println("Mouse Down");
 	}
 
 	public void onMouseOver(MouseOverEvent event) {
@@ -63,7 +56,7 @@ public class DraggableHandle extends HTML implements
 
 	public void onMouseOut(MouseOutEvent event) {
 		System.out.println("Mouse out");
-		isDown = false;
+		//isDown = false;
 	}
 	
 	/**

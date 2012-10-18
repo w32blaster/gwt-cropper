@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -520,5 +521,17 @@ public class GWTCropper extends HTMLPanel {
 		hc.add(backgroundHandle, 0, 0);
 		
 		return backgroundHandle;
+	}
+	
+	public void onMouseMove(MouseMoveEvent event) {
+		/*
+		 * super.addMouseMoveHandler(this);
+		System.out.println("Mouse move isDown=" + isDown);
+		if (isDown) {
+			onGrag.onDrag(event.getRelativeX(this.parentEl),
+						event.getRelativeY(this.parentEl));
+		}
+		*/
+		
 	}
 }
