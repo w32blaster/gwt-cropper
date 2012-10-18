@@ -7,20 +7,14 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.DragEvent;
-import com.google.gwt.event.dom.client.DragHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * GWT Cropper - widget allowing to select any area on the top of a picture 
@@ -128,16 +122,17 @@ public class GWTCropper extends HTMLPanel {
 		selectionContainer.add(new Image(src), -this.nInnerX, -this.nInnerY);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
 		
-		AbsolutePanel handlesContainer = this.addSelectionHandles(selectionContainer);
+		AbsolutePanel handlesContainer = this.buildSelectionArea(selectionContainer);
 		
 		this._container.add(handlesContainer, this.nInnerX, this.nInnerY);
 	}
 
 	/**
 	 * Add special handles. User can drag these handle and change form of the selected area
-	 * @return
+	 * 
+	 * @return container with handles and needed attached event listeners
 	 */
-	private AbsolutePanel addSelectionHandles(final AbsolutePanel selectionContainer) {
+	private AbsolutePanel buildSelectionArea(final AbsolutePanel selectionContainer) {
 		
 		// add selection handles
 		final AbsolutePanel handlesContainer = new AbsolutePanel();
@@ -148,26 +143,140 @@ public class GWTCropper extends HTMLPanel {
 		handlesContainer.setStyleName(this.bundleResources.css().handlesContainer());
 		handlesContainer.getElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
+		// append background
+		DraggableHandle draggableBackground = this.appendDraggableBackground(selectionContainer, handlesContainer);	
+
+		// append top left corner handler
+		this.appendTopLeftCornerHandle(selectionContainer, handlesContainer, draggableBackground);
+		
+		HTMLPanel topRightHandle = new HTMLPanel("");
+		topRightHandle.setStyleName(this.bundleResources.css().handle());
+		topRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
+		topRightHandle.getElement().getStyle().setTop(-5, Unit.PX);
+		handlesContainer.add(topRightHandle);
+		
+		HTMLPanel bottomLeftHandle = new HTMLPanel("");
+		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
+		bottomLeftHandle.getElement().getStyle().setLeft(-5, Unit.PX);
+		bottomLeftHandle.getElement().getStyle().setBottom(-5, Unit.PX);
+		handlesContainer.add(bottomLeftHandle);
+		
+		HTMLPanel bottomRightHandle = new HTMLPanel("");
+		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
+		bottomRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
+		bottomRightHandle.getElement().getStyle().setBottom(-5, Unit.PX);
+		handlesContainer.add(bottomRightHandle);
+		
+		return handlesContainer;
+	}
+
+	/**
+	 * Appends the top left corner with handle and assigns appropriate event processing to it
+	 * 
+	 * @param sc - container of selection
+	 * @param hc - container of handles
+	 * @param bgr - draggable background-container, holding all handles
+	 */
+	private void appendTopLeftCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+		DraggableHandle topLeftHandle = new DraggableHandle();
+		topLeftHandle.setParentElement(this._container.getElement());
+		topLeftHandle.setStyleName(this.bundleResources.css().handle());
+		topLeftHandle.getElement().getStyle().setCursor(Cursor.NW_RESIZE);
+		
+		topLeftHandle.setOnDrag(new IOnGrag() {
+
+			int initX = -1;
+			int initY = -1;
+			int initW = -1;
+			int initH = -1;
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public void onDrag(int cursorX, int cursorY) {
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(hc);
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(hc);
+					initH = nInnerHeight;
+				}
+				
+				nInnerWidth = initW + (initX - cursorX);
+				nInnerHeight = initH + (initY - cursorY);
+				
+				Element el = hc.getElement();
+				
+				el.getStyle().setLeft(cursorX, Unit.PX);
+				el.getStyle().setTop(cursorY, Unit.PX);
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Element el2 = sc.getElement();
+				el2.getStyle().setLeft(cursorX, Unit.PX);
+				el2.getStyle().setTop(cursorY, Unit.PX);
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Image backgroundImage = (Image) sc.getWidget(0);
+				Element elImg = backgroundImage.getElement();
+				elImg.getStyle().setLeft(-cursorX, Unit.PX);
+				elImg.getStyle().setTop(-cursorY, Unit.PX);
+				
+				Element el3 = bgr.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void resetInitials() {
+				this.initX = -1;
+				this.initY = -1;
+				this.initW = -1;
+				this.initH = -1;
+			}
+			
+		});
+		
+		hc.add(topLeftHandle, -5, -5);
+	}
+
+	/**
+	 * Append draggable selection background
+	 * 
+	 * @param sc - container of selection
+	 * @param hc - container of handles
+	 */
+	private DraggableHandle appendDraggableBackground(final AbsolutePanel sc, final AbsolutePanel hc) {
+		
 		final DraggableHandle backgroundHandle = new DraggableHandle();
 		backgroundHandle.setParentElement(this._container.getElement());
 		backgroundHandle.setWidth(this.nInnerWidth + "px");
 		backgroundHandle.setHeight(this.nInnerHeight + "px");
 		backgroundHandle.getElement().getStyle().setCursor(Cursor.MOVE);
+		
 		backgroundHandle.setOnDrag(new IOnGrag() {
 
 			int offsetX = -1;
 			int offsetY = -1;
 			
+			/**
+			 * {@inheritDoc}
+			 */
 			public void onDrag(int cursorX, int cursorY) {
 				
 				if (offsetX == -1) {
-					offsetX = cursorX - _container.getWidgetLeft(handlesContainer);
+					offsetX = cursorX - _container.getWidgetLeft(hc);
 				}
 				if (offsetY == -1) {
-					offsetY = cursorY - _container.getWidgetTop(handlesContainer);
+					offsetY = cursorY - _container.getWidgetTop(hc);
 				}
 				
-				Element el = handlesContainer.getElement();
+				Element el = hc.getElement();
 				
 				int x = cursorX - offsetX;
 				int y = cursorY - offsetY;
@@ -175,35 +284,28 @@ public class GWTCropper extends HTMLPanel {
 				el.getStyle().setLeft(x, Unit.PX);
 				el.getStyle().setTop(y, Unit.PX);
 				
-				Element el2 = selectionContainer.getElement();
+				Element el2 = sc.getElement();
 				el2.getStyle().setLeft(x, Unit.PX);
 				el2.getStyle().setTop(y, Unit.PX);
 				
+				Image backgroundImage = (Image) sc.getWidget(0);
+				Element elImg = backgroundImage.getElement();
+				elImg.getStyle().setLeft(-x, Unit.PX);
+				elImg.getStyle().setTop(-y, Unit.PX);
+				
 			}
 
-			public void resetCursorOffset() {
+			/**
+			 * {@inheritDoc}
+			 */
+			public void resetInitials() {
 				this.offsetX = -1;
 				this.offsetY = -1;
 			}
 			
 		});
-		handlesContainer.add(backgroundHandle, 0, 0);	
-
-		HTMLPanel topLeftHandle = new HTMLPanel("");
-		topLeftHandle.setStyleName(this.bundleResources.css().handle());
-		handlesContainer.add(topLeftHandle, -5, -5);
+		hc.add(backgroundHandle, 0, 0);
 		
-		HTMLPanel topRightHandle = new HTMLPanel("");
-		topRightHandle.setStyleName(this.bundleResources.css().handle());
-		handlesContainer.add(topRightHandle, this.nInnerWidth - 5, -5);
-		
-		HTMLPanel bottomLeftHandle = new HTMLPanel("");
-		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
-		handlesContainer.add(bottomLeftHandle, -5, this.nInnerHeight - 5);
-		
-		HTMLPanel bottomRightHandle = new HTMLPanel("");
-		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
-		handlesContainer.add(bottomRightHandle, this.nInnerWidth - 5, this.nInnerHeight - 5);
-		return handlesContainer;
+		return backgroundHandle;
 	}
 }

@@ -44,7 +44,7 @@ public class DraggableHandle extends HTML implements ClickHandler,
 
 	final public void onMouseUp(MouseUpEvent event) {
 		isDown = false;
-		onGrag.resetCursorOffset();
+		onGrag.resetInitials();
 	}
 
 	final public void onMouseDown(MouseDownEvent event) {
@@ -82,18 +82,16 @@ public class DraggableHandle extends HTML implements ClickHandler,
 		/**
 		 * Implementation of the dragging.
 		 * 
-		 * @param x - coordinate X relative parent element
-		 * @param y - coordinate Y relative parent element
+		 * @param cursorX
+		 * @param cursorY
 		 */
-		void onDrag(int x, int y);
+		void onDrag(int cursorX, int cursorY);
 		
 		/**
-		 * Usually dragging mechanisms use offsets for cursor, because 
-		 * user grabs the object somewhere in the middle, not the top left corner.
-		 * When user releases this object, all this offsets should be reseted. This method allows
-		 * to do that
+		 * Usually dragging mechanisms saves initial state to orient during 
+		 * dragging. This method resets these initial values after dragging event ends
 		 */
-		void resetCursorOffset();
+		void resetInitials();
 	}
 
 }
