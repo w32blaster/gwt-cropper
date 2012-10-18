@@ -149,11 +149,8 @@ public class GWTCropper extends HTMLPanel {
 		// append top left corner handler
 		this.appendTopLeftCornerHandle(selectionContainer, handlesContainer, draggableBackground);
 		
-		HTMLPanel topRightHandle = new HTMLPanel("");
-		topRightHandle.setStyleName(this.bundleResources.css().handle());
-		topRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
-		topRightHandle.getElement().getStyle().setTop(-5, Unit.PX);
-		handlesContainer.add(topRightHandle);
+		// append top right corner handler
+		this.appendTopRightCornerHandle(selectionContainer, handlesContainer, draggableBackground);
 		
 		HTMLPanel bottomLeftHandle = new HTMLPanel("");
 		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
@@ -170,6 +167,83 @@ public class GWTCropper extends HTMLPanel {
 		return handlesContainer;
 	}
 
+	/**
+	 * Appends the top right corner with handle and assigns appropriate event processing to it
+	 * 
+	 * @param sc - container of selection
+	 * @param hc - container of handles
+	 * @param bgr - draggable background-container, holding all handles
+	 */
+	private void appendTopRightCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+		
+		DraggableHandle topRightHandle = new DraggableHandle();
+		topRightHandle.setParentElement(this._container.getElement());
+		topRightHandle.setStyleName(this.bundleResources.css().handle());
+		topRightHandle.getElement().getStyle().setCursor(Cursor.NE_RESIZE);
+		
+		topRightHandle.setOnDrag(new IOnGrag() {
+
+			int initX = -1;
+			int initY = -1;
+			int initW = -1;
+			int initH = -1;
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public void onDrag(int cursorX, int cursorY) {
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(hc) + nInnerWidth;
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(hc);
+					initH = nInnerHeight;
+				}
+				
+				nInnerWidth = initW + (cursorX - initX);
+				nInnerHeight = initH + (initY - cursorY);
+				
+				Element el = hc.getElement();
+				
+				el.getStyle().setTop(cursorY, Unit.PX);
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Element el2 = sc.getElement();
+				el2.getStyle().setTop(cursorY, Unit.PX);
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Image backgroundImage = (Image) sc.getWidget(0);
+				Element elImg = backgroundImage.getElement();
+				elImg.getStyle().setTop(-cursorY, Unit.PX);
+				
+				Element el3 = bgr.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void resetInitials() {
+				this.initX = -1;
+				this.initY = -1;
+				this.initW = -1;
+				this.initH = -1;
+			}
+			
+		});
+		
+		topRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
+		topRightHandle.getElement().getStyle().setTop(-5, Unit.PX);
+		hc.add(topRightHandle);
+		
+	}
+
+	
 	/**
 	 * Appends the top left corner with handle and assigns appropriate event processing to it
 	 * 
