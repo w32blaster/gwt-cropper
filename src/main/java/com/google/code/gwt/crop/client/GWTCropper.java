@@ -155,11 +155,8 @@ public class GWTCropper extends HTMLPanel {
 		// append bottom left corner handler
 		this.appendBottomLeftCornerHandle(selectionContainer, handlesContainer, draggableBackground);
 		
-		HTMLPanel bottomRightHandle = new HTMLPanel("");
-		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
-		bottomRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
-		bottomRightHandle.getElement().getStyle().setBottom(-5, Unit.PX);
-		handlesContainer.add(bottomRightHandle);
+		// append bottom right corner handler
+		this.appendBottomRightCornerHandle(selectionContainer, handlesContainer, draggableBackground);
 		
 		return handlesContainer;
 	}
@@ -237,6 +234,75 @@ public class GWTCropper extends HTMLPanel {
 		bottomLeftHandle.getElement().getStyle().setLeft(-5, Unit.PX);
 		bottomLeftHandle.getElement().getStyle().setBottom(-5, Unit.PX);
 		hc.add(bottomLeftHandle);
+		
+	}
+	
+	/**
+	 * Appends the bottom left corner with handle and assigns appropriate event processing to it
+	 * 
+	 * @param sc - container of selection
+	 * @param hc - container of handles
+	 * @param bgr - draggable background-container, holding all handles
+	 */
+	private void appendBottomRightCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+		
+		DraggableHandle bottomRightHandle = new DraggableHandle();
+		bottomRightHandle.setParentElement(this._container.getElement());
+		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
+		bottomRightHandle.getElement().getStyle().setCursor(Cursor.SE_RESIZE);
+		
+		bottomRightHandle.setOnDrag(new IOnGrag() {
+
+			int initX = -1;
+			int initY = -1;
+			int initW = -1;
+			int initH = -1;
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public void onDrag(int cursorX, int cursorY) {
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(hc) + nInnerWidth;
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(hc) + nInnerHeight;
+					initH = nInnerHeight;
+				}
+				
+				nInnerWidth = initW + (cursorX - initX);
+				nInnerHeight = initH + (cursorY - initY);
+				
+				Element el = hc.getElement();
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Element el2 = sc.getElement();
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				Element el3 = bgr.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void resetInitials() {
+				this.initX = -1;
+				this.initY = -1;
+				this.initW = -1;
+				this.initH = -1;
+			}
+			
+		});
+		
+		bottomRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
+		bottomRightHandle.getElement().getStyle().setBottom(-5, Unit.PX);
+		hc.add(bottomRightHandle);
 		
 	}
 	
