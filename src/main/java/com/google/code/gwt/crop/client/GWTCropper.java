@@ -1,6 +1,5 @@
 package com.google.code.gwt.crop.client;
 
-import com.google.code.gwt.crop.client.widget.DraggableHandle;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -17,6 +16,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 
@@ -56,7 +56,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private final AbsolutePanel _container;
 	private AbsolutePanel handlesContainer;
 	private AbsolutePanel selectionContainer = new AbsolutePanel();
-	private DraggableHandle draggableBackground;
+	private HTML draggableBackground;
 	
 	/**
 	 * Bundle of all resources
@@ -193,7 +193,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void appendBottomLeftCornerHandle() {
 		
-		DraggableHandle bottomLeftHandle = new DraggableHandle();
+		HTML bottomLeftHandle = new HTML();
 		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
 		bottomLeftHandle.getElement().getStyle().setCursor(Cursor.SW_RESIZE);
 		
@@ -220,7 +220,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void appendBottomRightCornerHandle() {
 		
-		DraggableHandle bottomRightHandle = new DraggableHandle();
+		HTML bottomRightHandle = new HTML();
 		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
 		bottomRightHandle.getElement().getStyle().setCursor(Cursor.SE_RESIZE);
 		
@@ -247,7 +247,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void appendTopRightCornerHandle() {
 		
-		DraggableHandle topRightHandle = new DraggableHandle();
+		HTML topRightHandle = new HTML();
 		topRightHandle.setStyleName(this.bundleResources.css().handle());
 		topRightHandle.getElement().getStyle().setCursor(Cursor.NE_RESIZE);
 		
@@ -274,7 +274,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @param bgr - draggable background-container, holding all handles
 	 */
 	private void appendTopLeftCornerHandle() {
-		DraggableHandle topLeftHandle = new DraggableHandle();
+		HTML topLeftHandle = new HTML();
 		topLeftHandle.setStyleName(this.bundleResources.css().handle());
 		topLeftHandle.getElement().getStyle().setCursor(Cursor.NW_RESIZE);
 		
@@ -295,9 +295,9 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @param sc - container of selection
 	 * @param hc - container of handles
 	 */
-	private DraggableHandle appendDraggableBackground() {
+	private HTML appendDraggableBackground() {
 		
-		final DraggableHandle backgroundHandle = new DraggableHandle();
+		final HTML backgroundHandle = new HTML();
 		backgroundHandle.setWidth(this.nInnerWidth + "px");
 		backgroundHandle.setHeight(this.nInnerHeight + "px");
 		backgroundHandle.getElement().getStyle().setCursor(Cursor.MOVE);
