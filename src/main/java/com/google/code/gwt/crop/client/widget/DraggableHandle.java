@@ -1,8 +1,6 @@
 package com.google.code.gwt.crop.client.widget;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -15,7 +13,7 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.HTML;
 
-public class DraggableHandle extends HTML implements ClickHandler, 
+public class DraggableHandle extends HTML implements 
 		MouseDownHandler, MouseUpHandler, MouseOutHandler, MouseOverHandler, MouseMoveHandler {
 
 	private boolean isDown = false;
@@ -31,7 +29,7 @@ public class DraggableHandle extends HTML implements ClickHandler,
 		super.addMouseUpHandler(this);
 		super.addMouseOverHandler(this);
 		super.addMouseOutHandler(this);
-		super.addClickHandler(this);
+
 	}
 	
 	public void setOnDrag(IOnGrag onGrag) {
@@ -51,10 +49,6 @@ public class DraggableHandle extends HTML implements ClickHandler,
 		isDown = true;
 	}
 
-	final public void onClick(ClickEvent event) {
-		System.out.println("onClick");
-	}
-
 	public void onMouseMove(MouseMoveEvent event) {
 		
 		if (isDown) {
@@ -64,10 +58,11 @@ public class DraggableHandle extends HTML implements ClickHandler,
 	}
 
 	public void onMouseOver(MouseOverEvent event) {
-		
+		System.out.println("Mouse Over");
 	}
 
 	public void onMouseOut(MouseOutEvent event) {
+		System.out.println("Mouse out");
 		isDown = false;
 	}
 	
