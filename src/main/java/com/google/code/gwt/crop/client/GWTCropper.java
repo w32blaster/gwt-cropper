@@ -406,15 +406,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				nInnerWidth = initW + (initX - cursorX);
 				nInnerHeight = initH + (initY - cursorY);
 				
-				// compensation for apecified aspect ration
+				// compensation for specified aspect ration
 				if (this.aspectRatio != 0) {
-					if (nInnerWidth > nInnerHeight) {
-						cursorY -= nInnerWidth - nInnerHeight;
-						nInnerHeight = nInnerWidth;
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						int newHeight = (int) (nInnerWidth / this.aspectRatio);
+						cursorY -= newHeight - nInnerHeight;
+						nInnerHeight = newHeight;
 					}
 					else {
-						cursorX -= nInnerHeight - nInnerWidth;
-						nInnerWidth = nInnerHeight;
+						int newWidth = (int) (nInnerHeight * this.aspectRatio);
+						cursorX -= newWidth - nInnerWidth;
+						nInnerWidth = newWidth;
 					}
 				}
 				
@@ -454,15 +456,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				nInnerWidth = initW + (cursorX - initX);
 				nInnerHeight = initH + (initY - cursorY);
 				
-				// compensation for apecified aspect ration
+				// compensation for specified aspect ration
 				if (this.aspectRatio != 0) {
-					if (nInnerWidth > nInnerHeight) {
-						cursorY -= nInnerWidth - nInnerHeight;
-						nInnerHeight = nInnerWidth;
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						int newHeight = (int) (nInnerWidth / this.aspectRatio);
+						cursorY -= newHeight - nInnerHeight;
+						nInnerHeight = newHeight;
 					}
 					else {
-						cursorX += nInnerHeight - nInnerWidth;
-						nInnerWidth = nInnerHeight;
+						int newWidth = (int) (nInnerHeight * this.aspectRatio);
+						cursorX += newWidth - nInnerWidth;
+						nInnerWidth = newWidth;
 					}
 				}
 				
@@ -499,15 +503,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				nInnerWidth = initW + (initX - cursorX);
 				nInnerHeight = initH + (cursorY - initY);
 				
-				// compensation for apecified aspect ration
+				// compensation for specified aspect ration
 				if (this.aspectRatio != 0) {
-					if (nInnerWidth > nInnerHeight) {
-						cursorY += nInnerWidth - nInnerHeight;
-						nInnerHeight = nInnerWidth;
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						int newHeight = (int) (nInnerWidth / this.aspectRatio);
+						cursorY += newHeight - nInnerHeight;
+						nInnerHeight = newHeight;
 					}
 					else {
-						cursorX -= nInnerHeight - nInnerWidth;
-						nInnerWidth = nInnerHeight;
+						int newWidth = (int) (nInnerHeight * this.aspectRatio);
+						cursorX -= newWidth - nInnerWidth;
+						nInnerWidth = newWidth;
 					}
 				}
 				
@@ -544,15 +550,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				nInnerWidth = initW + (cursorX - initX);
 				nInnerHeight = initH + (cursorY - initY);
 				
-				// compensation for apecified aspect ration
+				// compensation for specified aspect ration
 				if (this.aspectRatio != 0) {
-					if (nInnerWidth > nInnerHeight) {
-						cursorY += nInnerWidth - nInnerHeight;
-						nInnerHeight = nInnerWidth;
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						int newHeight = (int) (nInnerWidth / this.aspectRatio);
+						cursorY += newHeight - nInnerHeight;
+						nInnerHeight = newHeight;
 					}
 					else {
-						cursorX += nInnerHeight - nInnerWidth;
-						nInnerWidth = nInnerHeight;
+						int newWidth = (int) (nInnerHeight * this.aspectRatio);
+						cursorX += newWidth - nInnerWidth;
+						nInnerWidth = newWidth;
 					}
 				}
 				
@@ -588,5 +596,20 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.offsetX = -1;
 		this.offsetY = -1;
 		this.action = Constants.DRAG_NONE;
+	}
+	
+	/**
+	 * returns absolute value
+	 * 
+	 * @param i
+	 * @return
+	 */
+	private int abs(int i) {
+		if (i >= 0) {
+			return i;
+		}
+		else {
+			return -i;
+		}
 	}
 }
