@@ -10,7 +10,6 @@
 .selection {
 	border: 1px dashed white;
 	z-index: 100;
-	cursor: move;
 }
 .handlesContainer {
 	overflow: visible;
@@ -22,4 +21,13 @@
 	border: 1px solid white;
 	background: rgba(255, 255, 255, 0.25);
 	position: absolute;
+}
+
+.base DIV {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
