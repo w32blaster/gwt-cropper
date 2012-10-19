@@ -1,7 +1,5 @@
 package com.google.code.gwt.crop.client;
 
-import com.google.code.gwt.crop.client.widget.DraggableHandle;
-import com.google.code.gwt.crop.client.widget.DraggableHandle.IOnGrag;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -9,12 +7,18 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * GWT Cropper - widget allowing to select any area on the top of a picture 
@@ -23,7 +27,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author ilja
  *
  */
-public class GWTCropper extends HTMLPanel {
+public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler {
+	
 	private final IBundleResources bundleResources = GWT.create(IBundleResources.class);
 	
 	// canvas sizes
@@ -36,7 +41,29 @@ public class GWTCropper extends HTMLPanel {
 	private int nInnerWidth;
 	private int nInnerHeight;
 	
+	private boolean isDown = false;
+	private byte action = Constants.DRAG_NONE;
+	
+	// initials to provide crop actions
+	private int initX = -1;
+	private int initY = -1;
+	private int initW = -1;
+	private int initH = -1;
+	
+	private int offsetX = -1;
+	private int offsetY = -1;
+	
+	// instances to canvas and selection area, available for the cropper
 	private final AbsolutePanel _container;
+	private AbsolutePanel handlesContainer;
+	private AbsolutePanel selectionContainer = new AbsolutePanel();
+	private HTML draggableBackground;
+	
+	// settings
+	private float aspectRatio = 0;
+	
+	// min size of height or width. Just to prevent selection area to be shrinked to a dot
+	private final int MIN_SIZE = 20; 
 	
 	/**
 	 * Bundle of all resources
@@ -56,12 +83,8 @@ public class GWTCropper extends HTMLPanel {
 	
 		@Source("GWTCropper.css")
 		GWTCropperStyle css();
-		
-		/*
-		@Source("imageBundle/launch.png")
-		ImageResource launch();
-		*/
 	}
+	
 	/**
 	 * Constructor. Requires URL to the full image to be cropped
 	 * 
@@ -73,10 +96,70 @@ public class GWTCropper extends HTMLPanel {
 		bundleResources.css().ensureInjected();
 		this._container = new AbsolutePanel();
 		this.addCanvas(strImageURL);
+		
+		addDomHandler(this, MouseMoveEvent.getType());
+		addDomHandler(this, MouseUpEvent.getType());
 	}
 
+	// ---------- Public API ------------------
+	
 	/**
-	 * Adds a canvas with background image
+	 * <p>Sets the aspect ratio of width/height for the selection.</p>
+	 * 
+	 * <p> Examples:
+	 * <ul>
+	 * <li><b>Default</b> is 0, it means, that selection can have any shape.</li>
+	 * <li>Ratio is 1/1, then selection will be square.</li>
+	 * <li>Ratio 2/1, then the selection will be rectangular where width twice longer than height</li>
+	 * <li>ratio 1/2=0.5, then the selection will be rectangular where height twice higher than width</li>
+	 * </ul></p>  
+	 * 
+	 * @param acpectRatio
+	 */
+	public void setAspectRatio(float acpectRatio) {
+		this.aspectRatio = acpectRatio;
+	}
+	
+	/**
+	 * Get the X coordinate of the selection top left corner (CSS parameter: left)
+	 * 
+	 * @return X coordinate
+	 */
+	public int getSelectionXCoordinate() {
+		return this.nInnerX;
+	}
+	
+	/**
+	 * Get the Y coordinate of the selection top left corner (CSS parameter: top)
+	 * 
+	 * @return Y coordinate
+	 */
+	public int getSelectionYCoordinate() {
+		return this.nInnerY;
+	}
+	
+	/**
+	 * Get the width of the selection area
+	 * 
+	 * @return width in pixels
+	 */
+	public int getSelectionWidth() {
+		return this.nInnerWidth;
+	}
+	
+	/**
+	 * Get the height of the selection area
+	 * 
+	 * @return height in pixels
+	 */
+	public int getSelectionHeight() {
+		return this.nInnerHeight;
+	}
+	
+	// --------- private methods ------------
+	
+	/**
+	 * Adds a canvas with background image.
 	 * 
 	 * @param src - image URL
 	 */
@@ -106,14 +189,14 @@ public class GWTCropper extends HTMLPanel {
 	 * 
 	 */
 	private void addSelection(final String src) {
-		AbsolutePanel selectionContainer = new AbsolutePanel();
+		
 		selectionContainer.addStyleName(this.bundleResources.css().selection());
 		
 		// set initial coordinates
 		this.nInnerX = (int) (nOuterWidth * 0.2);
 		this.nInnerY = (int) (nOuterHeight * 0.2);
-		this.nInnerWidth = 300;
-		this.nInnerHeight = 200;
+		this.nInnerWidth = (int) (nOuterWidth * 0.2);
+		this.nInnerHeight = (int) ((this.aspectRatio == 0) ? (nOuterHeight * 0.2) : (nInnerWidth / aspectRatio)); 
 		
 		selectionContainer.setWidth(this.nInnerWidth + "px");
 		selectionContainer.setHeight(this.nInnerHeight + "px");
@@ -122,9 +205,9 @@ public class GWTCropper extends HTMLPanel {
 		selectionContainer.add(new Image(src), -this.nInnerX, -this.nInnerY);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
 		
-		AbsolutePanel handlesContainer = this.buildSelectionArea(selectionContainer);
+		this.buildSelectionArea(selectionContainer);
 		
-		this._container.add(handlesContainer, this.nInnerX, this.nInnerY);
+		this._container.add(this.handlesContainer, this.nInnerX, this.nInnerY);
 	}
 
 	/**
@@ -135,28 +218,28 @@ public class GWTCropper extends HTMLPanel {
 	private AbsolutePanel buildSelectionArea(final AbsolutePanel selectionContainer) {
 		
 		// add selection handles
-		final AbsolutePanel handlesContainer = new AbsolutePanel();
+		this.handlesContainer = new AbsolutePanel();
 		
-		handlesContainer.setWidth(this.nInnerWidth + "px");
-		handlesContainer.setHeight(this.nInnerHeight + "px");
+		this.handlesContainer.setWidth(this.nInnerWidth + "px");
+		this.handlesContainer.setHeight(this.nInnerHeight + "px");
 		
-		handlesContainer.setStyleName(this.bundleResources.css().handlesContainer());
-		handlesContainer.getElement().getStyle().setOverflow(Overflow.VISIBLE);
+		this.handlesContainer.setStyleName(this.bundleResources.css().handlesContainer());
+		this.handlesContainer.getElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
 		// append background
-		DraggableHandle draggableBackground = this.appendDraggableBackground(selectionContainer, handlesContainer);	
+		this.draggableBackground = this.appendDraggableBackground();	
 
 		// append top left corner handler
-		this.appendTopLeftCornerHandle(selectionContainer, handlesContainer, draggableBackground);
+		this.appendTopLeftCornerHandle();
 		
 		// append top right corner handler
-		this.appendTopRightCornerHandle(selectionContainer, handlesContainer, draggableBackground);
+		this.appendTopRightCornerHandle();
 		
 		// append bottom left corner handler
-		this.appendBottomLeftCornerHandle(selectionContainer, handlesContainer, draggableBackground);
+		this.appendBottomLeftCornerHandle();
 		
 		// append bottom right corner handler
-		this.appendBottomRightCornerHandle(selectionContainer, handlesContainer, draggableBackground);
+		this.appendBottomRightCornerHandle();
 		
 		return handlesContainer;
 	}
@@ -168,72 +251,23 @@ public class GWTCropper extends HTMLPanel {
 	 * @param hc - container of handles
 	 * @param bgr - draggable background-container, holding all handles
 	 */
-	private void appendBottomLeftCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+	private void appendBottomLeftCornerHandle() {
 		
-		DraggableHandle bottomLeftHandle = new DraggableHandle();
-		bottomLeftHandle.setParentElement(this._container.getElement());
+		HTML bottomLeftHandle = new HTML();
 		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
 		bottomLeftHandle.getElement().getStyle().setCursor(Cursor.SW_RESIZE);
 		
-		bottomLeftHandle.setOnDrag(new IOnGrag() {
+		bottomLeftHandle.addMouseDownHandler(new MouseDownHandler() {
 
-			int initX = -1;
-			int initY = -1;
-			int initW = -1;
-			int initH = -1;
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void onDrag(int cursorX, int cursorY) {
-				
-				if (initX == -1) {
-					initX = _container.getWidgetLeft(hc);
-					initW = nInnerWidth;
-				}
-				if (initY == -1) {
-					initY = _container.getWidgetTop(hc) + nInnerHeight;
-					initH = nInnerHeight;
-				}
-				
-				nInnerWidth = initW + (initX - cursorX);
-				nInnerHeight = initH + (cursorY - initY);
-				
-				Element el = hc.getElement();
-				
-				el.getStyle().setLeft(cursorX, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Element el2 = sc.getElement();
-				el2.getStyle().setLeft(cursorX, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Image backgroundImage = (Image) sc.getWidget(0);
-				Element elImg = backgroundImage.getElement();
-				elImg.getStyle().setLeft(-cursorX, Unit.PX);
-				
-				Element el3 = bgr.getElement();
-				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			public void onMouseDown(MouseDownEvent event) {
+				isDown = true;
+				action = Constants.DRAG_BOTTOM_LEFT_CORNER;
 			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			public void resetInitials() {
-				this.initX = -1;
-				this.initY = -1;
-				this.initW = -1;
-				this.initH = -1;
-			}
-			
 		});
 		
 		bottomLeftHandle.getElement().getStyle().setLeft(-5, Unit.PX);
 		bottomLeftHandle.getElement().getStyle().setBottom(-5, Unit.PX);
-		hc.add(bottomLeftHandle);
+		this.handlesContainer.add(bottomLeftHandle);
 		
 	}
 	
@@ -244,65 +278,23 @@ public class GWTCropper extends HTMLPanel {
 	 * @param hc - container of handles
 	 * @param bgr - draggable background-container, holding all handles
 	 */
-	private void appendBottomRightCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+	private void appendBottomRightCornerHandle() {
 		
-		DraggableHandle bottomRightHandle = new DraggableHandle();
-		bottomRightHandle.setParentElement(this._container.getElement());
+		HTML bottomRightHandle = new HTML();
 		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
 		bottomRightHandle.getElement().getStyle().setCursor(Cursor.SE_RESIZE);
 		
-		bottomRightHandle.setOnDrag(new IOnGrag() {
+		bottomRightHandle.addMouseDownHandler(new MouseDownHandler() {
 
-			int initX = -1;
-			int initY = -1;
-			int initW = -1;
-			int initH = -1;
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void onDrag(int cursorX, int cursorY) {
-				
-				if (initX == -1) {
-					initX = _container.getWidgetLeft(hc) + nInnerWidth;
-					initW = nInnerWidth;
-				}
-				if (initY == -1) {
-					initY = _container.getWidgetTop(hc) + nInnerHeight;
-					initH = nInnerHeight;
-				}
-				
-				nInnerWidth = initW + (cursorX - initX);
-				nInnerHeight = initH + (cursorY - initY);
-				
-				Element el = hc.getElement();
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Element el2 = sc.getElement();
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Element el3 = bgr.getElement();
-				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			public void onMouseDown(MouseDownEvent event) {
+				isDown = true;
+				action = Constants.DRAG_BOTTOM_RIGHT_CORNER;
 			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			public void resetInitials() {
-				this.initX = -1;
-				this.initY = -1;
-				this.initW = -1;
-				this.initH = -1;
-			}
-			
 		});
 		
 		bottomRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
 		bottomRightHandle.getElement().getStyle().setBottom(-5, Unit.PX);
-		hc.add(bottomRightHandle);
+		this.handlesContainer.add(bottomRightHandle);
 		
 	}
 	
@@ -313,72 +305,23 @@ public class GWTCropper extends HTMLPanel {
 	 * @param hc - container of handles
 	 * @param bgr - draggable background-container, holding all handles
 	 */
-	private void appendTopRightCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
+	private void appendTopRightCornerHandle() {
 		
-		DraggableHandle topRightHandle = new DraggableHandle();
-		topRightHandle.setParentElement(this._container.getElement());
+		HTML topRightHandle = new HTML();
 		topRightHandle.setStyleName(this.bundleResources.css().handle());
 		topRightHandle.getElement().getStyle().setCursor(Cursor.NE_RESIZE);
 		
-		topRightHandle.setOnDrag(new IOnGrag() {
+		topRightHandle.addMouseDownHandler(new MouseDownHandler() {
 
-			int initX = -1;
-			int initY = -1;
-			int initW = -1;
-			int initH = -1;
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void onDrag(int cursorX, int cursorY) {
-				
-				if (initX == -1) {
-					initX = _container.getWidgetLeft(hc) + nInnerWidth;
-					initW = nInnerWidth;
-				}
-				if (initY == -1) {
-					initY = _container.getWidgetTop(hc);
-					initH = nInnerHeight;
-				}
-				
-				nInnerWidth = initW + (cursorX - initX);
-				nInnerHeight = initH + (initY - cursorY);
-				
-				Element el = hc.getElement();
-				
-				el.getStyle().setTop(cursorY, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Element el2 = sc.getElement();
-				el2.getStyle().setTop(cursorY, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Image backgroundImage = (Image) sc.getWidget(0);
-				Element elImg = backgroundImage.getElement();
-				elImg.getStyle().setTop(-cursorY, Unit.PX);
-				
-				Element el3 = bgr.getElement();
-				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			public void onMouseDown(MouseDownEvent event) {
+				isDown = true;
+				action = Constants.DRAG_TOP_RIGHT_CORNER;
 			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			public void resetInitials() {
-				this.initX = -1;
-				this.initY = -1;
-				this.initW = -1;
-				this.initH = -1;
-			}
-			
 		});
 		
 		topRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
 		topRightHandle.getElement().getStyle().setTop(-5, Unit.PX);
-		hc.add(topRightHandle);
+		this.handlesContainer.add(topRightHandle);
 		
 	}
 
@@ -390,72 +333,20 @@ public class GWTCropper extends HTMLPanel {
 	 * @param hc - container of handles
 	 * @param bgr - draggable background-container, holding all handles
 	 */
-	private void appendTopLeftCornerHandle(final AbsolutePanel sc, final AbsolutePanel hc, final DraggableHandle bgr) {
-		DraggableHandle topLeftHandle = new DraggableHandle();
-		topLeftHandle.setParentElement(this._container.getElement());
+	private void appendTopLeftCornerHandle() {
+		HTML topLeftHandle = new HTML();
 		topLeftHandle.setStyleName(this.bundleResources.css().handle());
 		topLeftHandle.getElement().getStyle().setCursor(Cursor.NW_RESIZE);
 		
-		topLeftHandle.setOnDrag(new IOnGrag() {
+		topLeftHandle.addMouseDownHandler(new MouseDownHandler() {
 
-			int initX = -1;
-			int initY = -1;
-			int initW = -1;
-			int initH = -1;
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void onDrag(int cursorX, int cursorY) {
-				
-				if (initX == -1) {
-					initX = _container.getWidgetLeft(hc);
-					initW = nInnerWidth;
-				}
-				if (initY == -1) {
-					initY = _container.getWidgetTop(hc);
-					initH = nInnerHeight;
-				}
-				
-				nInnerWidth = initW + (initX - cursorX);
-				nInnerHeight = initH + (initY - cursorY);
-				
-				Element el = hc.getElement();
-				
-				el.getStyle().setLeft(cursorX, Unit.PX);
-				el.getStyle().setTop(cursorY, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Element el2 = sc.getElement();
-				el2.getStyle().setLeft(cursorX, Unit.PX);
-				el2.getStyle().setTop(cursorY, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
-				
-				Image backgroundImage = (Image) sc.getWidget(0);
-				Element elImg = backgroundImage.getElement();
-				elImg.getStyle().setLeft(-cursorX, Unit.PX);
-				elImg.getStyle().setTop(-cursorY, Unit.PX);
-				
-				Element el3 = bgr.getElement();
-				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+			public void onMouseDown(MouseDownEvent event) {
+				isDown = true;
+				action = Constants.DRAG_TOP_LEFT_CORNER;
 			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			public void resetInitials() {
-				this.initX = -1;
-				this.initY = -1;
-				this.initW = -1;
-				this.initH = -1;
-			}
-			
 		});
 		
-		hc.add(topLeftHandle, -5, -5);
+		this.handlesContainer.add(topLeftHandle, -5, -5);
 	}
 
 	/**
@@ -464,61 +355,340 @@ public class GWTCropper extends HTMLPanel {
 	 * @param sc - container of selection
 	 * @param hc - container of handles
 	 */
-	private DraggableHandle appendDraggableBackground(final AbsolutePanel sc, final AbsolutePanel hc) {
+	private HTML appendDraggableBackground() {
 		
-		final DraggableHandle backgroundHandle = new DraggableHandle();
-		backgroundHandle.setParentElement(this._container.getElement());
+		final HTML backgroundHandle = new HTML();
 		backgroundHandle.setWidth(this.nInnerWidth + "px");
 		backgroundHandle.setHeight(this.nInnerHeight + "px");
 		backgroundHandle.getElement().getStyle().setCursor(Cursor.MOVE);
 		
-		backgroundHandle.setOnDrag(new IOnGrag() {
+		backgroundHandle.addMouseDownHandler(new MouseDownHandler() {
 
-			int offsetX = -1;
-			int offsetY = -1;
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void onDrag(int cursorX, int cursorY) {
-				
-				if (offsetX == -1) {
-					offsetX = cursorX - _container.getWidgetLeft(hc);
-				}
-				if (offsetY == -1) {
-					offsetY = cursorY - _container.getWidgetTop(hc);
-				}
-				
-				Element el = hc.getElement();
-				
-				int x = cursorX - offsetX;
-				int y = cursorY - offsetY;
-				
-				el.getStyle().setLeft(x, Unit.PX);
-				el.getStyle().setTop(y, Unit.PX);
-				
-				Element el2 = sc.getElement();
-				el2.getStyle().setLeft(x, Unit.PX);
-				el2.getStyle().setTop(y, Unit.PX);
-				
-				Image backgroundImage = (Image) sc.getWidget(0);
-				Element elImg = backgroundImage.getElement();
-				elImg.getStyle().setLeft(-x, Unit.PX);
-				elImg.getStyle().setTop(-y, Unit.PX);
-				
+			public void onMouseDown(MouseDownEvent event) {
+				isDown = true;
+				action = Constants.DRAG_BACKGROUND;
 			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			public void resetInitials() {
-				this.offsetX = -1;
-				this.offsetY = -1;
-			}
-			
 		});
-		hc.add(backgroundHandle, 0, 0);
+		
+		this.handlesContainer.add(backgroundHandle, 0, 0);
 		
 		return backgroundHandle;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseUp(MouseUpEvent event) {
+		this.isDown = false;
+		this.reset();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseMove(MouseMoveEvent event) {
+		
+		if (this.isDown) {
+			this.provideDragging(event.getRelativeX(this._container.getElement()),
+						event.getRelativeY(this._container.getElement()));
+		}
+	}
+	
+	/**
+	 * provides dragging action
+	 * 
+	 * @param cursorX
+	 * @param cursorY
+	 */
+	private void provideDragging(int cursorX, int cursorY) {
+		
+		Element el = null;
+		Element el2 = null;
+		Element elImg = null;
+		
+		int futureWidth = 0;
+		int futureHeight = 0;
+		
+		switch (this.action) {
+			
+		
+			case Constants.DRAG_BACKGROUND:
+				
+				if (offsetX == -1) {
+					offsetX = cursorX - _container.getWidgetLeft(this.handlesContainer);
+				}
+				if (offsetY == -1) {
+					offsetY = cursorY - _container.getWidgetTop(this.handlesContainer);
+				}
+				
+				el = this.handlesContainer.getElement();
+				
+				this.nInnerX = cursorX - offsetX;
+				this.nInnerY = cursorY - offsetY;
+				
+				// don't drag selection out of the canvas borders
+				if (this.nInnerX < 0) this.nInnerX = 0;
+				if (this.nInnerY < 0) this.nInnerY = 0;
+				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth) this.nInnerX = this.nOuterWidth - this.nInnerWidth;
+				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight) this.nInnerY = this.nOuterHeight - this.nInnerHeight;
+				
+				el.getStyle().setLeft(this.nInnerX, Unit.PX);
+				el.getStyle().setTop(this.nInnerY, Unit.PX);
+				
+				el2 = this.selectionContainer.getElement();
+				el2.getStyle().setLeft(this.nInnerX, Unit.PX);
+				el2.getStyle().setTop(this.nInnerY, Unit.PX);
+				
+				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
+				elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+				elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
+				break;
+				
+				
+			case Constants.DRAG_TOP_LEFT_CORNER:
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(this.handlesContainer);
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(this.handlesContainer);
+					initH = nInnerHeight;
+				}
+				
+				futureWidth = initW + (initX - cursorX);
+				futureHeight = initH + (initY - cursorY);
+				
+				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+					return;
+				}
+				
+				this.nInnerWidth = futureWidth;
+				this.nInnerHeight = futureHeight;
+				
+				this.nInnerX = cursorX;
+				this.nInnerY = cursorY;
+				
+				// compensation for specified aspect ratio
+				if (this.aspectRatio != 0) {
+					if (abs(this.initX - this.nInnerX) > abs(this.initY - this.nInnerY)) {
+						int newHeight = (int) (this.nInnerWidth / this.aspectRatio);
+						this.nInnerY -= newHeight - this.nInnerHeight;
+						this.nInnerHeight = newHeight;
+					}
+					else {
+						int newWidth = (int) (this.nInnerHeight * this.aspectRatio);
+						this.nInnerX -= newWidth - this.nInnerWidth;
+						this.nInnerWidth = newWidth;
+					}
+				}
+				
+				el = this.handlesContainer.getElement();
+				
+				el.getStyle().setLeft(this.nInnerX, Unit.PX);
+				el.getStyle().setTop(this.nInnerY, Unit.PX);
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				el2 = this.selectionContainer.getElement();
+				el2.getStyle().setLeft(this.nInnerX, Unit.PX);
+				el2.getStyle().setTop(this.nInnerY, Unit.PX);
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
+				elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+				elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
+				
+				Element el3 = this.draggableBackground.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);
+				break;
+				
+				
+			case Constants.DRAG_TOP_RIGHT_CORNER:
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(this.handlesContainer) + nInnerWidth;
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(this.handlesContainer);
+					initH = nInnerHeight;
+				}
+				
+				futureWidth = initW + (cursorX - initX);
+				futureHeight = initH + (initY - cursorY);
+				
+				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+					return;
+				}
+				
+				nInnerWidth = futureWidth;
+				nInnerHeight = futureHeight;
+				
+				// compensation for specified aspect ratio
+				if (this.aspectRatio != 0) {
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						int newHeight = (int) (nInnerWidth / this.aspectRatio);
+						cursorY -= newHeight - nInnerHeight;
+						nInnerHeight = newHeight;
+					}
+					else {
+						nInnerWidth = (int) (nInnerHeight * this.aspectRatio);
+					}
+				}
+				
+				this.nInnerY = cursorY;
+				
+				el = this.handlesContainer.getElement();
+				
+				el.getStyle().setTop(cursorY, Unit.PX);
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				el2 = this.selectionContainer.getElement();
+				el2.getStyle().setTop(cursorY, Unit.PX);
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
+				elImg.getStyle().setTop(-cursorY, Unit.PX);
+				
+				el3 = this.draggableBackground.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);		
+				break;
+				
+				
+			case Constants.DRAG_BOTTOM_LEFT_CORNER:
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(this.handlesContainer);
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(this.handlesContainer) + nInnerHeight;
+					initH = nInnerHeight;
+				}
+				
+				futureWidth = initW + (initX - cursorX);
+				futureHeight = initH + (cursorY - initY);
+				
+				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+					return;
+				}
+				
+				nInnerWidth = futureWidth;
+				nInnerHeight = futureHeight;
+				
+				// compensation for specified aspect ratio
+				if (this.aspectRatio != 0) {
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						nInnerHeight = (int) (nInnerWidth / this.aspectRatio);
+					}
+					else {
+						int newWidth = (int) (nInnerHeight * this.aspectRatio);
+						cursorX -= newWidth - nInnerWidth;
+						nInnerWidth = newWidth;
+					}
+				}
+				
+				this.nInnerX = cursorX;
+				
+				el = this.handlesContainer.getElement();
+				
+				el.getStyle().setLeft(cursorX, Unit.PX);
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				el2 = this.selectionContainer.getElement();
+				el2.getStyle().setLeft(cursorX, Unit.PX);
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
+				elImg.getStyle().setLeft(-cursorX, Unit.PX);
+				
+				el3 = this.draggableBackground.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);
+				break;
+				
+				
+			case Constants.DRAG_BOTTOM_RIGHT_CORNER:
+				
+				if (initX == -1) {
+					initX = _container.getWidgetLeft(this.handlesContainer) + nInnerWidth;
+					initW = nInnerWidth;
+				}
+				if (initY == -1) {
+					initY = _container.getWidgetTop(this.handlesContainer) + nInnerHeight;
+					initH = nInnerHeight;
+				}
+				
+				futureWidth = initW + (cursorX - initX);
+				futureHeight = initH + (cursorY - initY);
+				
+				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+					return;
+				}
+				
+				nInnerWidth = futureWidth;
+				nInnerHeight = futureHeight;
+				
+				// compensation for specified aspect ratio
+				if (this.aspectRatio != 0) {
+					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						nInnerHeight = (int) (nInnerWidth / this.aspectRatio);
+					}
+					else {
+						nInnerWidth = (int) (nInnerHeight * this.aspectRatio);
+					}
+				}
+				
+				el = this.handlesContainer.getElement();
+				el.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				el2 = this.selectionContainer.getElement();
+				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				
+				el3 = this.draggableBackground.getElement();
+				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
+				el3.getStyle().setHeight(nInnerHeight, Unit.PX);
+				break;
+				
+				
+			default:
+				break;
+		}
+		
+	}
+	
+	/**
+	 * Resets all initial values.
+	 * 
+	 */
+	private void reset() {
+		
+		this.initX = -1;
+		this.initY = -1;
+		this.initW = -1;
+		this.initH = -1;
+		this.offsetX = -1;
+		this.offsetY = -1;
+		this.action = Constants.DRAG_NONE;
+	}
+	
+	/**
+	 * Returns absolute value
+	 * 
+	 * @param i
+	 * @return
+	 */
+	private int abs(int i) {
+		return i >= 0 ? i : -i;
 	}
 }
