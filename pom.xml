@@ -12,15 +12,17 @@
 
     <scm>
    		<connection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</connection>
+   		 <developerConnection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</developerConnection>
 	</scm>
-
+	
 	<distributionManagement>
-	   <repository>
-	       <uniqueVersion>false</uniqueVersion>
-	       <id>googlecode</id>
-	       <url>hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</url>
-	   </repository>
+	    <!--Site deploy repository-->
+	    <site>
+	        <id>gwt-cropper.googlecode.com</id>
+	        <url>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</url>
+	    </site>
 	</distributionManagement>
+	
 
 	<!--  convenience to define GWT version in one place -->
 	<properties>
@@ -78,21 +80,30 @@
 				   </configuration>
 				</plugin>
 				
-				<plugin>
-					<groupId>org.riedelcastro</groupId>
-					<artifactId>gcupload-maven-plugin</artifactId>
-					<version>1.0</version>
-				     <configuration>
-				         <projectName>gwt-cropper</projectName>
-				         <uploads>
-				             <upload>
-				                 <extensions>jar</extensions>
-				                 <labels>Type-Library,Featured</labels>
-				                 <summary>GWT Cropper</summary>
-			             </upload>
-				         </uploads>
-				     </configuration>
-				 </plugin>
+				<!--Deploy site with Mercurial (Hg)-->
+		        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-site-plugin</artifactId>
+		            <version>3.2</version>
+		            <dependencies>
+		                <dependency>
+		                    <groupId>org.apache.maven.scm</groupId>
+		                    <artifactId>maven-scm-api</artifactId>
+		                    <version>1.8</version>
+		                </dependency>
+		                <dependency>
+		                    <groupId>org.apache.maven.scm</groupId>
+		                    <artifactId>maven-scm-provider-hg</artifactId>
+		                    <version>1.8</version>
+		                </dependency>
+						<dependency>
+						    <groupId>org.apache.maven.wagon</groupId>
+						    <artifactId>wagon-scm</artifactId>
+						    <version>2.2</version>
+						</dependency>
+		            </dependencies>
+		        </plugin>
+
 			 
 			</plugins>
 		</pluginManagement>
