@@ -13,6 +13,14 @@
     <scm>
    		<connection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</connection>
 	</scm>
+	
+	<distributionManagement>
+	    <repository>
+	       <uniqueVersion>false</uniqueVersion>
+	       <id>gwt-cropper.googlecode.com</id>
+	       <url>hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</url>
+	   </repository>
+ 	</distributionManagement>
 
 	<!--  convenience to define GWT version in one place -->
 	<properties>
