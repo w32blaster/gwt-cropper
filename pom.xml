@@ -7,7 +7,7 @@
 	<groupId>com.google.code.gwt.crop</groupId>
 	<artifactId>gwt-crop</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<name>gwt-maven-archetype-project</name>
 
     <scm>
