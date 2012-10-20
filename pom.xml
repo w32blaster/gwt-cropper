@@ -7,12 +7,20 @@
 	<groupId>com.google.code.gwt.crop</groupId>
 	<artifactId>gwt-crop</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>gwt-maven-archetype-project</name>
 
     <scm>
    		<connection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</connection>
 	</scm>
+
+	<distributionManagement>
+	   <repository>
+	       <uniqueVersion>false</uniqueVersion>
+	       <id>googlecode</id>
+	       <url>hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</url>
+	   </repository>
+	</distributionManagement>
 
 	<!--  convenience to define GWT version in one place -->
 	<properties>
@@ -69,6 +77,23 @@
 				      <autoVersionSubmodules>true</autoVersionSubmodules>
 				   </configuration>
 				</plugin>
+				
+				<plugin>
+					<groupId>org.riedelcastro</groupId>
+					<artifactId>gcupload-maven-plugin</artifactId>
+					<version>1.0</version>
+				     <configuration>
+				         <projectName>gwt-cropper</projectName>
+				         <uploads>
+				             <upload>
+				                 <extensions>jar</extensions>
+				                 <labels>Type-Library,Featured</labels>
+				                 <summary>GWT Cropper</summary>
+			             </upload>
+				         </uploads>
+				     </configuration>
+				 </plugin>
+			 
 			</plugins>
 		</pluginManagement>
 		
