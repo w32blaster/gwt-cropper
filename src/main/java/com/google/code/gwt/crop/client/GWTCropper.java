@@ -62,11 +62,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	// settings
 	private float aspectRatio = 0;
 	
-	// min size of height or width. Just to prevent selection area to be shrinked to a dot
+	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
 	private final int MIN_SIZE = 20; 
 	
 	/**
-	 * Bundle of all resources
+	 * Bundle of all the CSS resources
 	 * 
 	 * @author ilja
 	 *
@@ -104,20 +104,29 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	// ---------- Public API ------------------
 	
 	/**
-	 * <p>Sets the aspect ratio of width/height for the selection.</p>
+	 * <p>Sets the aspect ratio (proportion of width to height) for the selection.</p>
 	 * 
 	 * <p> Examples:
 	 * <ul>
-	 * <li><b>Default</b> is 0, it means, that selection can have any shape.</li>
-	 * <li>Ratio is 1/1, then selection will be square.</li>
-	 * <li>Ratio 2/1, then the selection will be rectangular where width twice longer than height</li>
-	 * <li>ratio 1/2=0.5, then the selection will be rectangular where height twice higher than width</li>
-	 * </ul></p>  
+	 * <li><b>Default</b> is 0, it means, that the selection can have any shape.</li>
+	 * <li>Ratio is 1/1=1, then the selection will be square.</li>
+	 * <li>Ratio 2/1=2, then the selection will be rectangular where width is twice longer than height</li>
+	 * <li>ratio 1/2=0.5, then the selection will be rectangular where height is twice higher than width</li>
+	 * </ul>
+	 * </p>
 	 * 
-	 * @param acpectRatio
+	 * <p><i>Usage example:</i> You can declare a side proportion in this way: <br/>
+	 * <pre> cropper.setAspectRatio( (float) 1/2); </pre>
+	 * </p>
+	 * 
+	 * @param acpectRatio - float value, proportion width/height
 	 */
 	public void setAspectRatio(float acpectRatio) {
 		this.aspectRatio = acpectRatio;
+	}
+	
+	public float getAspectRatio() {
+		return this.aspectRatio;
 	}
 	
 	/**
@@ -230,123 +239,51 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.draggableBackground = this.appendDraggableBackground();	
 
 		// append top left corner handler
-		this.appendTopLeftCornerHandle();
+		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -5, 0, 0, -5);
 		
 		// append top right corner handler
-		this.appendTopRightCornerHandle();
+		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -5, -5, 0, 0);
 		
 		// append bottom left corner handler
-		this.appendBottomLeftCornerHandle();
+		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -5, -5);
 		
 		// append bottom right corner handler
-		this.appendBottomRightCornerHandle();
+		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -5, -5, 0);
 		
 		return handlesContainer;
 	}
 
 	/**
-	 * Appends the bottom left corner with handle and assigns appropriate event processing to it
+	 * Creates small draggable selection handle and appends it to the corner of selection area. User can drag 
+	 * this handle and change shape of the selection area
 	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
-	 * @param bgr - draggable background-container, holding all handles
+	 * @param cursor - cursor type for the CSS
+	 * @param actionType - action type for the event processor
+	 * @param top - top value in PX
+	 * @param right - right value in PX
+	 * @param bottom - bottom value in PX
+	 * @param left - left value in PX
 	 */
-	private void appendBottomLeftCornerHandle() {
+	private void appendHandle(Cursor cursor, final byte actionType, int top, int right, int bottom, int left) {
 		
-		HTML bottomLeftHandle = new HTML();
-		bottomLeftHandle.setStyleName(this.bundleResources.css().handle());
-		bottomLeftHandle.getElement().getStyle().setCursor(Cursor.SW_RESIZE);
+		HTML handle = new HTML();
+		handle.setStyleName(this.bundleResources.css().handle());
+		handle.getElement().getStyle().setCursor(cursor);
 		
-		bottomLeftHandle.addMouseDownHandler(new MouseDownHandler() {
+		handle.addMouseDownHandler(new MouseDownHandler() {
 
 			public void onMouseDown(MouseDownEvent event) {
 				isDown = true;
-				action = Constants.DRAG_BOTTOM_LEFT_CORNER;
+				action = actionType;
 			}
 		});
 		
-		bottomLeftHandle.getElement().getStyle().setLeft(-5, Unit.PX);
-		bottomLeftHandle.getElement().getStyle().setBottom(-5, Unit.PX);
-		this.handlesContainer.add(bottomLeftHandle);
+		if (top != 0) handle.getElement().getStyle().setTop(top, Unit.PX);
+		if (right != 0) handle.getElement().getStyle().setRight(right, Unit.PX);
+		if (bottom != 0) handle.getElement().getStyle().setBottom(bottom, Unit.PX);
+		if (left != 0) handle.getElement().getStyle().setLeft(left, Unit.PX);
 		
-	}
-	
-	/**
-	 * Appends the bottom left corner with handle and assigns appropriate event processing to it
-	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
-	 * @param bgr - draggable background-container, holding all handles
-	 */
-	private void appendBottomRightCornerHandle() {
-		
-		HTML bottomRightHandle = new HTML();
-		bottomRightHandle.setStyleName(this.bundleResources.css().handle());
-		bottomRightHandle.getElement().getStyle().setCursor(Cursor.SE_RESIZE);
-		
-		bottomRightHandle.addMouseDownHandler(new MouseDownHandler() {
-
-			public void onMouseDown(MouseDownEvent event) {
-				isDown = true;
-				action = Constants.DRAG_BOTTOM_RIGHT_CORNER;
-			}
-		});
-		
-		bottomRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
-		bottomRightHandle.getElement().getStyle().setBottom(-5, Unit.PX);
-		this.handlesContainer.add(bottomRightHandle);
-		
-	}
-	
-	/**
-	 * Appends the top right corner with handle and assigns appropriate event processing to it
-	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
-	 * @param bgr - draggable background-container, holding all handles
-	 */
-	private void appendTopRightCornerHandle() {
-		
-		HTML topRightHandle = new HTML();
-		topRightHandle.setStyleName(this.bundleResources.css().handle());
-		topRightHandle.getElement().getStyle().setCursor(Cursor.NE_RESIZE);
-		
-		topRightHandle.addMouseDownHandler(new MouseDownHandler() {
-
-			public void onMouseDown(MouseDownEvent event) {
-				isDown = true;
-				action = Constants.DRAG_TOP_RIGHT_CORNER;
-			}
-		});
-		
-		topRightHandle.getElement().getStyle().setRight(-5, Unit.PX);
-		topRightHandle.getElement().getStyle().setTop(-5, Unit.PX);
-		this.handlesContainer.add(topRightHandle);
-		
-	}
-
-	
-	/**
-	 * Appends the top left corner with handle and assigns appropriate event processing to it
-	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
-	 * @param bgr - draggable background-container, holding all handles
-	 */
-	private void appendTopLeftCornerHandle() {
-		HTML topLeftHandle = new HTML();
-		topLeftHandle.setStyleName(this.bundleResources.css().handle());
-		topLeftHandle.getElement().getStyle().setCursor(Cursor.NW_RESIZE);
-		
-		topLeftHandle.addMouseDownHandler(new MouseDownHandler() {
-
-			public void onMouseDown(MouseDownEvent event) {
-				isDown = true;
-				action = Constants.DRAG_TOP_LEFT_CORNER;
-			}
-		});
-		
-		this.handlesContainer.add(topLeftHandle, -5, -5);
+		this.handlesContainer.add(handle);	
 	}
 
 	/**
@@ -397,8 +334,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	/**
 	 * provides dragging action
 	 * 
-	 * @param cursorX
-	 * @param cursorY
+	 * @param cursorX - cursor X-position relatively the canvas
+	 * @param cursorY - cursor Y-position relatively the canvas
 	 */
 	private void provideDragging(int cursorX, int cursorY) {
 		
@@ -685,10 +622,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	/**
 	 * Returns absolute value
 	 * 
-	 * @param i
-	 * @return
+	 * @param value
+	 * @return absolute value
 	 */
-	private int abs(int i) {
-		return i >= 0 ? i : -i;
+	private int abs(int value) {
+		return value >= 0 ? value : -value;
 	}
 }
