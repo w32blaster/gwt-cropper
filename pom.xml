@@ -4,7 +4,7 @@
 		GWT-Maven archetype generated POM 
 	-->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.google.code.gwt.crop</groupId>
+	<groupId>com.googlecode.gwt-cropper</groupId>
 	<artifactId>gwt-crop</artifactId>
 	<packaging>jar</packaging>
 	<version>0.3-SNAPSHOT</version>
