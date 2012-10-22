@@ -45,10 +45,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private byte action = Constants.DRAG_NONE;
 	
 	// initials to provide crop actions
-	private int initX = -1;
-	private int initY = -1;
 	private int initW = -1;
 	private int initH = -1;
+
+	// X and Y coordinates of cursor before dragging
+	private int initX = -1;
+	private int initY = -1;
 	
 	private int offsetX = -1;
 	private int offsetY = -1;
@@ -163,6 +165,24 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	public int getSelectionHeight() {
 		return this.nInnerHeight;
+	}
+	
+	/**
+	 * Get the canvas height (original image you wish to crop)
+	 * 
+	 * @return height in PX
+	 */
+	public int getCanvasHeight() {
+		return this.nOuterHeight;
+	}
+	
+	/**
+	 * Get the canvas width (original image you wish to crop)
+	 * 
+	 * @return width in PX
+	 */
+	public int getCanvasWidth() {
+		return this.nOuterWidth;
 	}
 	
 	// --------- private methods ------------
@@ -392,7 +412,6 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					initY = _container.getWidgetTop(this.handlesContainer);
 					initH = nInnerHeight;
 				}
-				
 				futureWidth = initW + (initX - cursorX);
 				futureHeight = initH + (initY - cursorY);
 				
@@ -411,11 +430,29 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					if (abs(this.initX - this.nInnerX) > abs(this.initY - this.nInnerY)) {
 						int newHeight = (int) (this.nInnerWidth / this.aspectRatio);
 						this.nInnerY -= newHeight - this.nInnerHeight;
+						
+						// to prevent resizing out of the canvas on the Y axes
+						if (this.nInnerY <= 0) {
+							this.nInnerY = 0;
+							newHeight = this.initY + this.initH;
+							this.nInnerWidth = (int) (newHeight * this.aspectRatio);
+							this.nInnerX = this.initX - (int) (this.initY * this.aspectRatio); 
+						}
+						
 						this.nInnerHeight = newHeight;
 					}
 					else {
 						int newWidth = (int) (this.nInnerHeight * this.aspectRatio);
 						this.nInnerX -= newWidth - this.nInnerWidth;
+						
+						// to prevent resizing out of the canvas on the X axis
+						if (this.nInnerX < 0) {
+							this.nInnerX = 0;
+							newWidth = this.initX + this.initW;
+							this.nInnerHeight = (int) (newWidth / this.aspectRatio);
+							this.nInnerY = this.initY - (int) (this.initX / this.aspectRatio);
+						}
+						
 						this.nInnerWidth = newWidth;
 					}
 				}
@@ -467,12 +504,32 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				// compensation for specified aspect ratio
 				if (this.aspectRatio != 0) {
 					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						// move cursor right, top side has been adjusted automatically
+						
 						int newHeight = (int) (nInnerWidth / this.aspectRatio);
 						cursorY -= newHeight - nInnerHeight;
+						
+						// to prevent resizing out of the canvas on the Y axes
+						if (cursorY <= 0) {
+							cursorY = 0;
+							newHeight = this.initY + this.initH;
+							this.nInnerWidth = (int) (newHeight * this.aspectRatio);
+						}
+						
 						nInnerHeight = newHeight;
 					}
 					else {
+						// move cursor up, right side has been adjusted automatically
+						
 						nInnerWidth = (int) (nInnerHeight * this.aspectRatio);
+						
+						// to prevent resizing out of the canvas on the X axis
+						if ((this.nInnerWidth + this.nInnerX) >= this.nOuterWidth) {
+							this.nInnerWidth = this.nOuterWidth - this.nInnerX;
+							this.nInnerHeight = (int) (this.nInnerWidth / this.aspectRatio);
+							this.nInnerY = this.initY - (int) ((this.nOuterWidth - this.nInnerX - this.initW) / this.aspectRatio);
+							cursorY = this.nInnerY;
+						}
 					}
 				}
 				
@@ -522,11 +579,32 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				// compensation for specified aspect ratio
 				if (this.aspectRatio != 0) {
 					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						// cursor goes left, bottom side goes down...
+						
 						nInnerHeight = (int) (nInnerWidth / this.aspectRatio);
+						
+						// to prevent resizing out of the canvas on the Y axis
+						if ((this.nInnerHeight + this.nInnerY) >= this.nOuterHeight) {
+							this.nInnerHeight = this.nOuterHeight - this.nInnerY; 
+							this.nInnerWidth = (int) (this.nInnerHeight * this.aspectRatio);
+							this.nInnerY = this.nOuterHeight - this.nInnerHeight;
+							cursorX = this.initX - (int) ((this.nOuterHeight - this.initY) * this.aspectRatio);
+						}
+						
 					}
 					else {
+						// cursor goes down, left side goes to left
+						
 						int newWidth = (int) (nInnerHeight * this.aspectRatio);
 						cursorX -= newWidth - nInnerWidth;
+						
+						// to prevent resizing out of the canvas on the X axis
+						if (cursorX <= 0) {
+							newWidth = this.nInnerWidth + this.initX;
+							this.nInnerHeight = (int) (newWidth / this.aspectRatio);
+							cursorX = 0;
+						}
+						
 						nInnerWidth = newWidth;
 					}
 				}
@@ -577,10 +655,29 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				// compensation for specified aspect ratio
 				if (this.aspectRatio != 0) {
 					if (abs(initX - cursorX) > abs(initY - cursorY)) {
+						// cursor goes right, bottom side goes down...
+						
 						nInnerHeight = (int) (nInnerWidth / this.aspectRatio);
+						
+						// to prevent resizing out of the canvas on the Y axis
+						if ((this.nInnerHeight + this.nInnerY) >= this.nOuterHeight) {
+							this.nInnerHeight = this.nOuterHeight - this.nInnerY; 
+							this.nInnerWidth = (int) (this.nInnerHeight * this.aspectRatio);
+							this.nInnerY = this.nOuterHeight - this.nInnerHeight;
+							cursorX = this.nOuterWidth;
+						}
+						
 					}
 					else {
+						// cursor goes down, right side goes to right
 						nInnerWidth = (int) (nInnerHeight * this.aspectRatio);
+						
+						// to prevent resizing out of the canvas on the X axis
+						if (this.nInnerWidth + this.nInnerX >= this.nOuterWidth) {
+							this.nInnerWidth = this.nOuterWidth - this.nInnerX;
+							this.nInnerHeight = (int) (this.nInnerWidth / this.aspectRatio);
+							cursorX = this.nOuterHeight;
+						}
 					}
 				}
 				
