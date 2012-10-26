@@ -35,8 +35,8 @@
 	</licenses>
 
 	<scm>
-   		<connection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</connection>
-   		<developerConnection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</developerConnection>
+   		<connection>scm:hg:https://gwt-cropper.googlecode.com/hg/</connection>
+   		<developerConnection>scm:hg:https://gwt-cropper.googlecode.com/hg/</developerConnection>
 		<url>https://code.google.com/p/gwt-cropper/source/browse/</url>
 	</scm>
 
