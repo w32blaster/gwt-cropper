@@ -9,7 +9,7 @@
 	<groupId>com.googlecode.gwt-cropper</groupId>
 	<artifactId>gwt-crop</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3.1-SNAPSHOT</version>
 	<name>GWT Cropper</name>
 	<description>GWT plugin for image cropping</description>
 	<url>http://code.google.com/p/gwt-cropper/</url>
@@ -35,8 +35,8 @@
 	</licenses>
 
 	<scm>
-   		<connection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</connection>
-   		<developerConnection>scm:hg:https://ilja.hamalainen@code.google.com/p/gwt-cropper</developerConnection>
+   		<connection>scm:hg:https://gwt-cropper.googlecode.com/hg/</connection>
+   		<developerConnection>scm:hg:https://gwt-cropper.googlecode.com/hg/</developerConnection>
 		<url>https://code.google.com/p/gwt-cropper/source/browse/</url>
 	</scm>
 
