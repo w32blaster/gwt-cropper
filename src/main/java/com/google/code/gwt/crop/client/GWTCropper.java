@@ -28,6 +28,8 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.resources.client.ClientBundle;
@@ -44,7 +46,7 @@ import com.google.gwt.user.client.ui.Image;
  * @author ilja
  *
  */
-public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler {
+public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler {
 	
 	private final IBundleResources bundleResources = GWT.create(IBundleResources.class);
 	
@@ -118,6 +120,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		
 		addDomHandler(this, MouseMoveEvent.getType());
 		addDomHandler(this, MouseUpEvent.getType());
+		addDomHandler(this, MouseOutEvent.getType());
 	}
 
 	// ---------- Public API ------------------
@@ -363,8 +366,9 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void onMouseMove(MouseMoveEvent event) {
 		
 		if (this.isDown) {
-			this.provideDragging(event.getRelativeX(this._container.getElement()),
-						event.getRelativeY(this._container.getElement()));
+			
+			this.provideDragging(event.getRelativeX(this._container.getElement()), 
+					event.getRelativeY(this._container.getElement()));
 		}
 	}
 	
@@ -741,5 +745,20 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private int abs(int value) {
 		return value >= 0 ? value : -value;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseOut(MouseOutEvent event) {
+		if (this.isDown) {
+			/*
+			 * if cursor is out of canvas and the mouse is clicked,
+			 * then we want to "unclick" the mouse button programmatically.
+			 * Otherwise the selection would become "sticky".
+			 */
+			this.isDown = false;
+			this.reset();
+		}
 	}
 }
