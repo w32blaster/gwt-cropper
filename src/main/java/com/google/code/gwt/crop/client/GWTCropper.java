@@ -752,6 +752,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	public void onMouseOut(MouseOutEvent event) {
 		if (this.isDown) {
+			
 			/*
 			 * if cursor is out of canvas and the mouse is clicked,
 			 * then we want to "unclick" the mouse button programmatically.
