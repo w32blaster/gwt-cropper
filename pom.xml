@@ -6,7 +6,7 @@
 	<groupId>com.googlecode.gwt-cropper</groupId>
 	<artifactId>gwt-crop</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.4.2-SNAPSHOT</version>
+	<version>0.3.4-SNAPSHOT</version>
 	<name>GWT Cropper</name>
 	<description>GWT plugin for image cropping</description>
 	<url>http://code.google.com/p/gwt-cropper/</url>
@@ -93,7 +93,6 @@
 		</resources>
 
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
