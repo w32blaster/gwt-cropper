@@ -6,7 +6,7 @@ package com.google.code.gwt.crop.client;
  * @author ilja
  *
  */
-public interface Constants {
+interface Constants {
 
 	byte DRAG_NONE = 0;
 	byte DRAG_BACKGROUND = 1;
