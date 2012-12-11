@@ -1,28 +1,36 @@
 @CHARSET "UTF-8";
 
-@def handleCenter 5px;
+@def handleCenter 15px;
 
 .base {
 	background-color: #000;
 	position: relative;
 }
+
 .imageCanvas {
 	opacity: 0.4;
 }
+
 .selection {
-	border: 1px dashed white;
+	border: 2px dashed white;
 	z-index: 1;
 }
+
 .handlesContainer {
 	overflow: visible;
 	z-index: 2;
 }
+
 .handle {
-	width: 10px;
-	height: 10px;
+	width: 30px;
+	height: 30px;
 	border: 1px solid white;
 	background: rgba(255, 255, 255, 0.25);
 	position: absolute;
+	
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
 }
 
 .base DIV {

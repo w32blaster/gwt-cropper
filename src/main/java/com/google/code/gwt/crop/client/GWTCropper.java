@@ -17,11 +17,16 @@
 
 package com.google.code.gwt.crop.client;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -32,8 +37,14 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -46,9 +57,10 @@ import com.google.gwt.user.client.ui.Image;
  * @author ilja
  *
  */
-public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler {
+public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler,
+													TouchMoveHandler, TouchEndHandler, TouchCancelHandler {
 	
-	private final IBundleResources bundleResources = GWT.create(IBundleResources.class);
+	private final IStyleSource bundleResources = GWT.create(IStyleSource.class);
 	
 	// canvas sizes
 	private int nOuterWidth;
@@ -84,27 +96,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private float aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
-	private final int MIN_SIZE = 20; 
-	
-	/**
-	 * Bundle of all the CSS resources
-	 * 
-	 * @author ilja
-	 *
-	 */
-	public interface IBundleResources extends ClientBundle {
-
-		interface GWTCropperStyle extends CssResource {
-		    String base();
-		    String imageCanvas();
-		    String selection();
-		    String handlesContainer();
-		    String handle();
-		}
-	
-		@Source("GWTCropper.css")
-		GWTCropperStyle css();
-	}
+	private final int MIN_SIZE = 30; 
 	
 	/**
 	 * Constructor. Requires URL to the full image to be cropped
@@ -121,6 +113,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		addDomHandler(this, MouseMoveEvent.getType());
 		addDomHandler(this, MouseUpEvent.getType());
 		addDomHandler(this, MouseOutEvent.getType());
+		
+		addDomHandler(this, TouchMoveEvent.getType());
+		addDomHandler(this, TouchEndEvent.getType());
+		addDomHandler(this, TouchCancelEvent.getType());
 	}
 
 	// ---------- Public API ------------------
@@ -276,19 +272,22 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.handlesContainer.getElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
 		// append background
-		this.draggableBackground = this.appendDraggableBackground();	
+		this.draggableBackground = this.appendDraggableBackground();
+		
+		// find the center of handle to make an offset
+		final int hc = this.bundleResources.css().handleCenter();
 
 		// append top left corner handler
-		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -5, 0, 0, -5);
+		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -hc, 0, 0, -hc);
 		
 		// append top right corner handler
-		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -5, -5, 0, 0);
+		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -hc, -hc, 0, 0);
 		
 		// append bottom left corner handler
-		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -5, -5);
+		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -hc, -hc);
 		
 		// append bottom right corner handler
-		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -5, -5, 0);
+		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -hc, -hc, 0);
 		
 		return handlesContainer;
 	}
@@ -317,6 +316,13 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				action = actionType;
 			}
 		});
+		handle.addTouchStartHandler(new TouchStartHandler() {
+			
+			public void onTouchStart(TouchStartEvent event) {
+				isDown = true;
+				action = actionType;
+			}
+		});
 		
 		if (top != 0) handle.getElement().getStyle().setTop(top, Unit.PX);
 		if (right != 0) handle.getElement().getStyle().setRight(right, Unit.PX);
@@ -326,6 +332,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.handlesContainer.add(handle);	
 	}
 
+	
+	
 	/**
 	 * Append draggable selection background
 	 * 
@@ -346,30 +354,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				action = Constants.DRAG_BACKGROUND;
 			}
 		});
+		backgroundHandle.addTouchStartHandler(new TouchStartHandler() {
+			
+			public void onTouchStart(TouchStartEvent event) {
+				isDown = true;
+				action = Constants.DRAG_BACKGROUND;
+			}
+		});
 		
 		this.handlesContainer.add(backgroundHandle, 0, 0);
 		
 		return backgroundHandle;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void onMouseUp(MouseUpEvent event) {
-		this.isDown = false;
-		this.reset();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void onMouseMove(MouseMoveEvent event) {
-		
-		if (this.isDown) {
-			
-			this.provideDragging(event.getRelativeX(this._container.getElement()), 
-					event.getRelativeY(this._container.getElement()));
-		}
 	}
 	
 	/**
@@ -747,6 +742,45 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		return value >= 0 ? value : -value;
 	}
 
+	// DOM HANDLERS
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseUp(MouseUpEvent event) {
+		this.isDown = false;
+		this.reset();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseMove(MouseMoveEvent event) {
+		
+		if (this.isDown) {
+			
+			this.provideDragging(event.getRelativeX(this._container.getElement()), 
+					event.getRelativeY(this._container.getElement()));
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onTouchMove(TouchMoveEvent event) {
+		if (this.isDown) {
+			
+			JsArray<Touch> touches = event.getTouches();
+			if (touches.length() > 0) {
+				this.provideDragging(
+						touches.get(0).getRelativeX(this._container.getElement()), 
+						touches.get(0).getRelativeY(this._container.getElement())
+						);
+			}
+			
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -758,6 +792,26 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			 * then we want to "unclick" the mouse button programmatically.
 			 * Otherwise the selection would become "sticky".
 			 */
+			this.isDown = false;
+			this.reset();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onTouchEnd(TouchEndEvent event) {
+		if (this.isDown) {
+			this.isDown = false;
+			this.reset();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onTouchCancel(TouchCancelEvent event) {
+		if (this.isDown) {
 			this.isDown = false;
 			this.reset();
 		}
