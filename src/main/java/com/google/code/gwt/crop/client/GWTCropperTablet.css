@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-@def handleCenter 15px;
+@def handleSize 30px;
 
 .base {
 	background-color: #000;
@@ -22,8 +22,9 @@
 }
 
 .handle {
-	width: 30px;
-	height: 30px;
+	width: handleSize;
+	height: handleSize;
+	
 	border: 1px solid white;
 	background: rgba(255, 255, 255, 0.25);
 	position: absolute;

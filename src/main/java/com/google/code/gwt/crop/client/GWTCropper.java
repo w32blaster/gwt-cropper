@@ -17,9 +17,6 @@
 
 package com.google.code.gwt.crop.client;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
@@ -275,19 +272,19 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.draggableBackground = this.appendDraggableBackground();
 		
 		// find the center of handle to make an offset
-		final int hc = this.bundleResources.css().handleCenter();
+		final int h = this.bundleResources.css().handleSize() / 2;
 
 		// append top left corner handler
-		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -hc, 0, 0, -hc);
+		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -h, 0, 0, -h);
 		
 		// append top right corner handler
-		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -hc, -hc, 0, 0);
+		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -h, -h, 0, 0);
 		
 		// append bottom left corner handler
-		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -hc, -hc);
+		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -h, -h);
 		
 		// append bottom right corner handler
-		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -hc, -hc, 0);
+		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -h, -h, 0);
 		
 		return handlesContainer;
 	}
@@ -747,14 +744,6 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	/**
 	 * {@inheritDoc}
 	 */
-	public void onMouseUp(MouseUpEvent event) {
-		this.isDown = false;
-		this.reset();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 	public void onMouseMove(MouseMoveEvent event) {
 		
 		if (this.isDown) {
@@ -780,40 +769,49 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			
 		}
 	}
+
+	/**
+	 * Resets the dragging state. After this method, the cropper
+	 * presumes that the dragging action is finished.
+	 */
+	private void resetDraggingState() {
+		if (this.isDown) {
+			this.isDown = false;
+			this.reset();
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onMouseUp(MouseUpEvent event) {
+		this.resetDraggingState();
+	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onMouseOut(MouseOutEvent event) {
-		if (this.isDown) {
-			
-			/*
-			 * if cursor is out of canvas and the mouse is clicked,
-			 * then we want to "unclick" the mouse button programmatically.
-			 * Otherwise the selection would become "sticky".
-			 */
-			this.isDown = false;
-			this.reset();
-		}
+		
+		/*
+		 * if cursor is out of canvas and the mouse is clicked,
+		 * then we want to "unclick" the mouse button programmatically.
+		 * Otherwise the selection would become "sticky".
+		 */
+		this.resetDraggingState();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onTouchEnd(TouchEndEvent event) {
-		if (this.isDown) {
-			this.isDown = false;
-			this.reset();
-		}
+		this.resetDraggingState();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onTouchCancel(TouchCancelEvent event) {
-		if (this.isDown) {
-			this.isDown = false;
-			this.reset();
-		}
+		this.resetDraggingState();
 	}
 }

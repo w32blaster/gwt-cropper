@@ -17,10 +17,9 @@ interface GWTCropperStyle extends CssResource {
     String handle();
     
     /**
-     * Declares the center of a handle.
-     * Let's say, if handle is 30x30 px, then center will be 15px
+     * Declares the size of a handle. Assume, that it has the equal width and height
      * 
-     * @return
+     * @return handle size in pixels
      */
-    int handleCenter();
+    int handleSize();
 }
