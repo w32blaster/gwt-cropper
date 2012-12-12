@@ -34,8 +34,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.TouchCancelEvent;
-import com.google.gwt.event.dom.client.TouchCancelHandler;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
@@ -55,7 +53,7 @@ import com.google.gwt.user.client.ui.Image;
  *
  */
 public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler,
-													TouchMoveHandler, TouchEndHandler, TouchCancelHandler {
+													TouchMoveHandler, TouchEndHandler {
 	
 	private final IStyleSource bundleResources = GWT.create(IStyleSource.class);
 	
@@ -113,7 +111,6 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		
 		addDomHandler(this, TouchMoveEvent.getType());
 		addDomHandler(this, TouchEndEvent.getType());
-		addDomHandler(this, TouchCancelEvent.getType());
 	}
 
 	// ---------- Public API ------------------
@@ -761,10 +758,26 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			
 			JsArray<Touch> touches = event.getTouches();
 			if (touches.length() > 0) {
-				this.provideDragging(
-						touches.get(0).getRelativeX(this._container.getElement()), 
-						touches.get(0).getRelativeY(this._container.getElement())
-						);
+				
+				int x = touches.get(0).getRelativeX(this._container.getElement());
+				int y = touches.get(0).getRelativeY(this._container.getElement());
+				
+				if (x < 0 || y < 0 || x > nOuterWidth || y > nOuterHeight) {					
+					
+					/*
+					 * There is no such method as "onMouseOut" for touching, so we can't rely
+					 * on event handler. We should process manually these cases, when finger (i.e. cursor) is 
+					 * out of the cropper area.
+					 * 
+					 * If user moves his finger out of the canvas, then "stick" the selection to the canvas edges
+					 */
+					if (x < 0) x = 0;
+					if (x > nOuterWidth) x = nOuterWidth;
+					if (y < 0) y = 0;
+					if (y > nOuterHeight) y = nOuterHeight; 
+				}
+
+				this.provideDragging(x, y);
 			}
 			
 		}
@@ -805,13 +818,6 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * {@inheritDoc}
 	 */
 	public void onTouchEnd(TouchEndEvent event) {
-		this.resetDraggingState();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void onTouchCancel(TouchCancelEvent event) {
 		this.resetDraggingState();
 	}
 }
