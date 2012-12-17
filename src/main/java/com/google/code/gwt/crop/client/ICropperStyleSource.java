@@ -1,6 +1,5 @@
 package com.google.code.gwt.crop.client;
 
-
 /**
  * Interface is used to give changing styles for different device types.
  * It can be modified through deferring binding
@@ -8,7 +7,7 @@ package com.google.code.gwt.crop.client;
  * @author ilja
  *
  */
-interface IStyleSource {
+interface ICropperStyleSource {
 	
 	/**
 	 * Initiates proper implementation of the current style bundle.
@@ -19,5 +18,5 @@ interface IStyleSource {
 	 * 
 	 * @return GWTCropperStyle instance of the bundle style
 	 */
-	GWTCropperStyle css();
+	CropperStyleResource css();
 }

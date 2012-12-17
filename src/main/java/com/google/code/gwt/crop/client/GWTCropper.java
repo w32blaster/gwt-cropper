@@ -14,7 +14,6 @@
  * the License.
  */
 
-
 package com.google.code.gwt.crop.client;
 
 import com.google.gwt.core.client.GWT;
@@ -55,7 +54,7 @@ import com.google.gwt.user.client.ui.Image;
 public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler,
 													TouchMoveHandler, TouchEndHandler {
 	
-	private final IStyleSource bundleResources = GWT.create(IStyleSource.class);
+	private final ICropperStyleSource bundleResources = GWT.create(ICropperStyleSource.class);
 	
 	// canvas sizes
 	private int nOuterWidth;
@@ -123,7 +122,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * <li><b>Default</b> is 0, it means, that the selection can have any shape.</li>
 	 * <li>Ratio is 1/1=1, then the selection will be square.</li>
 	 * <li>Ratio 2/1=2, then the selection will be rectangular where width is twice longer than height</li>
-	 * <li>ratio 1/2=0.5, then the selection will be rectangular where height is twice higher than width</li>
+	 * <li>Ratio 1/2=0.5, then the selection will be rectangular where height is twice higher than width</li>
 	 * </ul>
 	 * </p>
 	 * 

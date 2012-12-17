@@ -3,12 +3,12 @@ package com.google.code.gwt.crop.client;
 import com.google.gwt.resources.client.CssResource;
 
 /**
- * CssResource interface for styles
+ * CssResource interface for <strong>GWT Cropper</strong> styles
  * 
  * @author ilja
  *
  */
-interface GWTCropperStyle extends CssResource {
+interface CropperStyleResource extends CssResource {
 
 	String base();
     String imageCanvas();

@@ -9,21 +9,21 @@ import com.google.gwt.resources.client.ClientBundle;
  * @author ilja
  *
  */
-class StylesTabletImpl implements IStyleSource {
+class StylesTabletImpl implements ICropperStyleSource {
 
 	private final IStyleTablet bundleResources = GWT.create(IStyleTablet.class);
 
 	interface IStyleTablet extends ClientBundle {
 		
 		@Source("GWTCropperTablet.css")
-		GWTCropperStyle getStyles();
+		CropperStyleResource getStyles();
 	}
 
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public GWTCropperStyle css() {
+	public CropperStyleResource css() {
 		return bundleResources.getStyles();
 	}
 }

@@ -4,17 +4,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 
 /**
- * Implementation of the style bundle initializer for desktops
+ * Implementation of the style bundle initializer for desktop
  * 
  * @author ilja
  *
  */
-class StylesDesktopImpl implements IStyleSource {
+class StylesDesktopImpl implements ICropperStyleSource {
 
 	interface IStyleDesktop extends ClientBundle {
 		
 		@Source("GWTCropper.css")
-		GWTCropperStyle getStyles();
+		CropperStyleResource getStyles();
 	}
 
 	private final IStyleDesktop bundleResources = GWT.create(IStyleDesktop.class);
@@ -22,7 +22,7 @@ class StylesDesktopImpl implements IStyleSource {
 	/**
 	 * {@inheritDoc}
 	 */
-	public GWTCropperStyle css() {
+	public CropperStyleResource css() {
 		return bundleResources.getStyles();
 	}
 
