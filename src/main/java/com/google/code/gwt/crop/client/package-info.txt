@@ -1,0 +1,4 @@
+This package contains set of Style implementations. All these classes have default
+visibility level. It is done in order to hide these classes away of the library users.
+
+Only GWTCropper.java is visible outside.

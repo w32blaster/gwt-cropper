@@ -13,6 +13,7 @@ interface CropperStyleResource extends CssResource {
 	String base();
     String imageCanvas();
     String selection();
+    String selectionDraggableBackground();
     String handlesContainer();
     String handle();
     

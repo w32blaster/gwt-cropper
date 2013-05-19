@@ -11,11 +11,10 @@
 }
 .selection {
 	border: 1px dashed white;
-	z-index: 1;
 }
+.selectionDraggableBackground {}
 .handlesContainer {
 	overflow: visible;
-	z-index: 2;
 }
 .handle {
 	width: handleSize;
