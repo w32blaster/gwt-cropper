@@ -1,0 +1,47 @@
+@CHARSET "UTF-8";
+
+@def handleSize 10px;
+
+.base {
+	background-color: #000;
+	position: relative;
+}
+.imageCanvas {
+	opacity: 0.4;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+    filter: alpha(opacity=40);
+}
+.selection {
+	border: 1px dashed white;
+	background: #FFFFFF;
+}
+.selectionDraggableBackground {
+	/* we need this 'hack', because without this magic IE didn't see the draggable area */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=5)";
+    filter: alpha(opacity=5);
+    opacity: 0.05;
+    background: #FFF;
+}
+.handlesContainer {
+	overflow: visible;
+}
+.handle {
+	width: handleSize;
+	height: handleSize;
+	border: 1px solid white;
+	background: #FFFFFF;
+	position: absolute;
+	
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+    filter: alpha(opacity=25);
+    opacity: 0.25;
+}
+
+.base DIV {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

@@ -1,5 +1,6 @@
 package com.google.code.gwt.crop.client;
 
+
 /**
  * Interface is used to give changing styles for different device types.
  * It can be modified through deferring binding
