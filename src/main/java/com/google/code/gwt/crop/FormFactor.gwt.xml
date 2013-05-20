@@ -8,27 +8,22 @@
 
   <property-provider name="formfactor">
   <![CDATA[
-      // Look for the formfactor as a url argument.
-      var args = location.search;
-      var start = args.indexOf("formfactor");
-      if (start >= 0) {
-        var value = args.substring(start);
-        var begin = value.indexOf("=") + 1;
-        var end = value.indexOf("&");
-        if (end == -1) {
-          end = value.length;
-        }
-        return value.substring(begin, end);
-      }
-
+      
       // Detect form factor from user agent.
       var ua = navigator.userAgent.toLowerCase();
+      var pl = navigator.platform.toLowerCase();
       if (ua.indexOf("iphone") != -1 || ua.indexOf("ipod") != -1) {
         // iphone and ipod.
         return "mobile";
+
       } else if (ua.indexOf("ipad") != -1) {
         // ipad.
         return "tablet";
+
+      } else if (pl.indexOf("win") !== -1 && ua.indexOf("touch") != -1) {
+        // win8 tablet
+        return "tablet";
+
       } else if (ua.indexOf("android") != -1 || ua.indexOf("mobile") != -1) {
         /*
          * Android - determine the form factor of android devices based on the diagonal screen

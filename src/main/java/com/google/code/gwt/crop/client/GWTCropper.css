@@ -12,7 +12,9 @@
 .selection {
 	border: 1px dashed white;
 }
-.selectionDraggableBackground {}
+.selectionDraggableBackground {
+    background: rgba(255, 255, 255, 0);
+}
 .handlesContainer {
 	overflow: visible;
 }
