@@ -17,9 +17,9 @@
 }
 .selectionDraggableBackground {
 	/* we need this 'hack', because without this magic IE didn't see the draggable area */
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=5)";
-    filter: alpha(opacity=5);
-    opacity: 0.05;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
     background: #FFF;
 }
 .handlesContainer {
