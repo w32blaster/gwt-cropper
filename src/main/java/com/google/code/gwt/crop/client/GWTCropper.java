@@ -45,11 +45,21 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 
 /**
- * GWT Cropper - widget allowing to select any area on the top of a picture 
- * in order to crop it.
+ * <p><b>GWT Cropper</b> - widget that allows you to select some area on top of a picture and retrieve coordinates
+ *  of this selection. It might be useful, if you want to crop a picture.</p>
  * 
- * @author ilja
- *
+ * <p>Usage example:
+ * <pre>
+ * final GWTCropper crop = new GWTCropper("url/to/your/uncropped/image.jpg");
+ * crop.setAspectRatio(1); // square selection (optional)
+ * panel.add(crop);
+ * </pre>
+ * </p>
+ * 
+ * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
+ * 
+ * @see <a href="https://code.google.com/p/gwt-cropper/">GWT Cropper home page</a>
+ * 
  */
 public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler,
 													TouchMoveHandler, TouchEndHandler {

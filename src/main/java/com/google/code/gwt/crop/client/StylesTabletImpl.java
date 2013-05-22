@@ -6,7 +6,7 @@ import com.google.gwt.resources.client.ClientBundle;
 /**
  * Implementation of the style bundle initializer for tablets
  * 
- * @author ilja
+ * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  *
  */
 class StylesTabletImpl implements ICropperStyleSource {
