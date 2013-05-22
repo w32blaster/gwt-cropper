@@ -3,7 +3,7 @@ package com.google.code.gwt.crop.client;
 /**
  * Constants for the GWT cropper to match action type
  * 
- * @author ilja
+ * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  *
  */
 interface Constants {

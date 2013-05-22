@@ -5,8 +5,7 @@ import com.google.gwt.resources.client.CssResource;
 /**
  * CssResource interface for <strong>GWT Cropper</strong> styles
  * 
- * @author ilja
- *
+ * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  */
 interface CropperStyleResource extends CssResource {
 

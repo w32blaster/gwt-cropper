@@ -6,7 +6,7 @@ import com.google.gwt.resources.client.ClientBundle;
 /**
  * Implementation of the style bundle initializer for desktop
  * 
- * @author ilja
+ * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  *
  */
 class StylesDesktopImpl implements ICropperStyleSource {

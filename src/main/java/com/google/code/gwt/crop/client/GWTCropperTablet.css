@@ -17,6 +17,7 @@
 }
 .selectionDraggableBackground{
 	background: rgba(255, 255, 255, 0);
+	-ms-touch-action: none;
 }
 
 .handlesContainer {
@@ -35,6 +36,8 @@
 	-webkit-border-radius: 15px;
 	-moz-border-radius: 15px;
 	border-radius: 15px;
+	
+	-ms-touch-action: none;
 }
 
 .base DIV {
