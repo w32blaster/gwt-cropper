@@ -71,10 +71,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int nOuterHeight;
 	
 	// selection coordinates
-	private int nInnerX;
-	private int nInnerY;
-	private int nInnerWidth;
-	private int nInnerHeight;
+	private int nInnerX = -1;
+	private int nInnerY = -1;
+	private int nInnerWidth = -1;
+	private int nInnerHeight = -1;
 	
 	private boolean isDown = false;
 	private byte action = Constants.DRAG_NONE;
@@ -100,12 +100,13 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private float aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
-	private final int MIN_SIZE = 30; 
+	private int MIN_WIDTH = 30;
+	private int MIN_HEIGHT = 30;
 	
 	/**
-	 * Constructor. Requires URL to the full image to be cropped
+	 * Constructor.
 	 * 
-	 * @param strImageURL
+	 * @param strImageURL - URL of an uncropped image
 	 */
 	public GWTCropper(String strImageURL) {
 		super("");
@@ -151,7 +152,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the X coordinate of the selection top left corner (CSS parameter: left)
+	 * Get the X coordinate of the selection top left corner
 	 * 
 	 * @return X coordinate
 	 */
@@ -160,7 +161,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the Y coordinate of the selection top left corner (CSS parameter: top)
+	 * Get the Y coordinate of the selection top left corner
 	 * 
 	 * @return Y coordinate
 	 */
@@ -204,6 +205,64 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		return this.nOuterWidth;
 	}
 	
+	/**
+	 * <p>Sets the initial size and position for the selected area.</p>
+	 * 
+	 * <p><i>Note, that all the incoming data will be validated. Thus, these requirements *must* be fulfilled:</i><br/>
+	 * <code>
+	 *       canvas width > ( initial X + initial selection width) <br />
+	 *       canvas height > ( initial Y + initial selection height)
+	 * </code>
+	 * <br />
+	 * Otherwise default values will be used.
+	 * </p>
+	 * 
+	 * @param x - initial X coordinate. Will be ignored if it is out of a canvas.
+	 * @param y - initial Y coordinate. Will be ignored if it is out of a canvas.
+	 * @param width - initial selection width in pixels (will be ignored, if bigger, than canvas width)
+	 * @param height - initial selection height in pixels (will be ignored if higher, than canvas height) 
+	 * @param shouldKeepAspectRatio - if <code>true</code>, then aspect ratio will be used for the selection; if
+	 * <code>false</code> then the selection could have any shape.
+	 */
+	public void setInitialSelection(int x, int y, int width, int height, boolean shouldKeepAspectRatio) {
+		
+		GWT.log("fdfsdfds \n dsfdfdsf \n sdfsdfsdfadf  \n adfafdfads", null);
+		
+		if (shouldKeepAspectRatio) 
+			this.setAspectRatio((float) width/height);
+		
+		if (width > MIN_WIDTH) 
+			this.nInnerWidth = width;
+		
+		if (height > MIN_WIDTH)
+			this.nInnerHeight = height;
+		
+		if (x > 0)
+			this.nInnerX = x;
+		
+		if (y > 0)
+			this.nInnerY = y;
+	}
+	
+	/**
+	 * <p>Sets the minimal width for the selection (default value is 30px). <br />
+	 * <i>Will be ignored if the value is greater than the initial selection width</i></p>
+	 * 
+	 * @param width in pixels
+	 */
+	public void setMinimalWidth(int width) {
+		if (width > 30) this.MIN_WIDTH = width;
+	}
+	
+	/**
+	 * <p>Sets the minimal height for the selection (default value is 30px). <br />
+	 * <i>Will be ignored if the value is greater than the initial selection height.</i></p>
+	 * @param height in pixels
+	 */
+	public void setMinimalHeight(int height) {
+		if (height > 30) this.MIN_HEIGHT = height;
+	}
+	
 	// --------- private methods ------------
 	
 	/**
@@ -240,12 +299,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		
 		selectionContainer.addStyleName(this.bundleResources.css().selection());
 		
-		// set initial coordinates
-		this.nInnerX = (int) (nOuterWidth * 0.2);
-		this.nInnerY = (int) (nOuterHeight * 0.2);
-		this.nInnerWidth = (int) (nOuterWidth * 0.2);
-		this.nInnerHeight = (int) ((this.aspectRatio == 0) ? (nOuterHeight * 0.2) : (nInnerWidth / aspectRatio)); 
-		
+		this.validateInitialData();
+
 		selectionContainer.setWidth(this.nInnerWidth + "px");
 		selectionContainer.setHeight(this.nInnerHeight + "px");
 		
@@ -256,6 +311,35 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.buildSelectionArea();
 		
 		this._container.add(this.handlesContainer, this.nInnerX, this.nInnerY);
+	}
+
+	/**
+	 * Validates all initial data. This method is called after the canvas image became loaded and we know, what are its actual 
+	 * dimensions. If any of data are incorrect, then set the default values.
+	 */
+	private void validateInitialData() {
+		
+		final boolean isDefaultWidth = this.nInnerX == -1 && this.nInnerWidth == -1;
+		final boolean isInvalidWidthAndX = this.nOuterWidth < (this.nInnerX + this.nInnerWidth);
+		
+		if (isDefaultWidth || isInvalidWidthAndX) {
+			this.nInnerX = (int) (nOuterWidth * 0.2);
+			this.nInnerWidth = (int) (nOuterWidth * 0.2);
+		}
+
+		// minimal width couldn't be more, than initial selection.
+		if (this.MIN_WIDTH > this.nInnerWidth) this.MIN_WIDTH = 30;
+		
+		final boolean isDefaultHeight = this.nInnerY == -1 && this.nInnerHeight == -1;
+		final boolean isInvalidHeightY = this.nOuterHeight < (this.nInnerY + this.nInnerHeight);
+		
+		if (isDefaultHeight || isInvalidHeightY) {
+			this.nInnerY = (int) (nOuterHeight * 0.2);
+			this.nInnerHeight = (int) ( (this.aspectRatio == 0) ? (nOuterHeight * 0.2) : (nInnerWidth / aspectRatio) );
+		}
+		
+		// minimal height couldn't be more, than initial selectin.
+		if (this.MIN_HEIGHT > this.nInnerHeight) this.MIN_HEIGHT = 30;
 	}
 
 	/**
@@ -435,7 +519,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				futureWidth = initW + (initX - cursorX);
 				futureHeight = initH + (initY - cursorY);
 				
-				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+				if (futureWidth < this.MIN_WIDTH || futureHeight < this.MIN_HEIGHT) {
 					return;
 				}
 				
@@ -514,7 +598,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				futureWidth = initW + (cursorX - initX);
 				futureHeight = initH + (initY - cursorY);
 				
-				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+				if (futureWidth < this.MIN_WIDTH || futureHeight < this.MIN_HEIGHT) {
 					return;
 				}
 				
@@ -589,7 +673,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				futureWidth = initW + (initX - cursorX);
 				futureHeight = initH + (cursorY - initY);
 				
-				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+				if (futureWidth < this.MIN_WIDTH || futureHeight < this.MIN_HEIGHT) {
 					return;
 				}
 				
@@ -665,7 +749,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				futureWidth = initW + (cursorX - initX);
 				futureHeight = initH + (cursorY - initY);
 				
-				if (futureWidth < this.MIN_SIZE || futureHeight < this.MIN_SIZE) {
+				if (futureWidth < this.MIN_WIDTH || futureHeight < this.MIN_HEIGHT) {
 					return;
 				}
 				
