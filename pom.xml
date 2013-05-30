@@ -85,7 +85,6 @@
 				<directory>src/main/java</directory>
 				<includes>
 					<include>**/client/**</include>
-					<include>**/public/**</include>
 					<include>**/*.gwt.xml</include>
 				</includes>
 			</resource>
@@ -102,6 +101,19 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+      
 		</plugins>
 
 	</build>
