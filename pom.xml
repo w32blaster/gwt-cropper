@@ -94,7 +94,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.2.1</version>
 				<configuration>
 					<preparationGoals>clean install</preparationGoals>
 					<goals>deploy</goals>
@@ -105,6 +104,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
+				<version>2.5.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -113,7 +113,15 @@
 					</execution>
 				</executions>
 			</plugin>
-      
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+						<docfilessubdirs>true</docfilessubdirs>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 
 	</build>
@@ -146,6 +154,27 @@
 				</plugins>
 			</build>
 		</profile>
+
+	<profile>
+		<id>generate-javadocapi</id>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<docfilessubdirs>true</docfilessubdirs>
+						<overview>${basedir}/overview.html</overview>
+						<javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
+						<stylesheetfile>${basedir}/src/main/javadoc/stylesheet-chrome.css</stylesheetfile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+
 	</profiles>
+
 
 </project>
