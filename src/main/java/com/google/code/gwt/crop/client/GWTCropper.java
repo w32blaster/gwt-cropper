@@ -45,9 +45,12 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 
 /**
+ * 
+ * <h1>GWT Cropper</h1>
  * <p><b>GWT Cropper</b> - widget that allows you to select some area on top of a picture and retrieve coordinates
  *  of this selection. It might be useful, if you want to crop a picture.</p>
  * 
+ * <h1>Example</h1>
  * <p>Usage example:
  * <pre>
  * final GWTCropper crop = new GWTCropper("url/to/your/uncropped/image.jpg");
@@ -104,8 +107,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int MIN_HEIGHT = 30;
 	
 	/**
-	 * Constructor.
-	 * 
+	 * Constructor with mandatory parameter of image's URL.
+	 *
 	 * @param strImageURL - URL of an uncropped image
 	 */
 	public GWTCropper(String strImageURL) {
@@ -210,23 +213,21 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * 
 	 * <p><i>Note, that all the incoming data will be validated. Thus, these requirements *must* be fulfilled:</i><br/>
 	 * <code>
-	 *       canvas width > ( initial X + initial selection width) <br />
-	 *       canvas height > ( initial Y + initial selection height)
+	 *       canvas width > (initial selection X + initial selection width) <br />
+	 *       canvas height > (initial selection Y + initial selection height)
 	 * </code>
 	 * <br />
 	 * Otherwise default values will be used.
 	 * </p>
 	 * 
-	 * @param x - initial X coordinate. Will be ignored if it is out of a canvas.
-	 * @param y - initial Y coordinate. Will be ignored if it is out of a canvas.
-	 * @param width - initial selection width in pixels (will be ignored, if bigger, than canvas width)
-	 * @param height - initial selection height in pixels (will be ignored if higher, than canvas height) 
-	 * @param shouldKeepAspectRatio - if <code>true</code>, then aspect ratio will be used for the selection; if
-	 * <code>false</code> then the selection could have any shape.
+	 * @param x initial X coordinate. Will be ignored if it is out of a canvas.
+	 * @param y initial Y coordinate. Will be ignored if it is out of a canvas.
+	 * @param width initial selection width in pixels (will be ignored, if bigger, than canvas width)
+	 * @param height initial selection height in pixels (will be ignored if higher, than canvas height) 
+	 * @param shouldKeepAspectRatio if <code>true</code>, then initial aspect ratio will be used for the selection and it will keep it's shape;
+	 * if <code>false</code> then the selection could have any shape.
 	 */
 	public void setInitialSelection(int x, int y, int width, int height, boolean shouldKeepAspectRatio) {
-		
-		GWT.log("fdfsdfds \n dsfdfdsf \n sdfsdfsdfadf  \n adfafdfads", null);
 		
 		if (shouldKeepAspectRatio) 
 			this.setAspectRatio((float) width/height);
@@ -314,7 +315,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 
 	/**
-	 * Validates all initial data. This method is called after the canvas image became loaded and we know, what are its actual 
+	 * Validates all initial data. This method is called after the canvas image becomes loaded and we know, what are its actual 
 	 * dimensions. If any of data are incorrect, then set the default values.
 	 */
 	private void validateInitialData() {
@@ -383,12 +384,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * Creates small draggable selection handle and appends it to the corner of selection area. User can drag 
 	 * this handle and change shape of the selection area
 	 * 
-	 * @param cursor - cursor type for the CSS
-	 * @param actionType - action type for the event processor
-	 * @param top - top value in PX
-	 * @param right - right value in PX
-	 * @param bottom - bottom value in PX
-	 * @param left - left value in PX
+	 * @param cursor cursor type for the CSS
+	 * @param actionType action type for the event processor
+	 * @param top  top value in PX
+	 * @param right right value in PX
+	 * @param bottom bottom value in PX
+	 * @param left left value in PX
 	 */
 	private void appendHandle(Cursor cursor, final byte actionType, int top, int right, int bottom, int left) {
 		
@@ -463,8 +464,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void provideDragging(int cursorX, int cursorY) {
 		
-		Element el = null;
-		Element el2 = null;
+		Element el = null; // handle's container
+		Element el2 = null; // selection's container
 		Element elImg = null;
 		
 		int futureWidth = 0;
