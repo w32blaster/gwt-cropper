@@ -209,6 +209,19 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
+	 * Shortcut for the {@link com.google.code.gwt.crop.client.GWTCropper#setInitialSelection(int, int, int, int, boolean) setInitialSelection(x, y, width, height, boolean)}
+	 * method. This method sets aspect ratio 0, that means the selection may have any shape.
+	 * 
+	 * @param x initial X coordinate. Will be ignored if it is out of a canvas.
+	 * @param y initial Y coordinate. Will be ignored if it is out of a canvas.
+	 * @param width initial selection width in pixels (will be ignored, if bigger, than canvas width)
+	 * @param height initial selection height in pixels (will be ignored if higher, than canvas height) 
+	 */
+	public void setInitialSelection(int x, int y, int width, int height) {
+		this.setInitialSelection(x, y, width, height, false);
+	}
+	
+	/**
 	 * <p>Sets the initial size and position for the selected area.</p>
 	 * 
 	 * <p><i>Note, that all the incoming data will be validated. Thus, these requirements *must* be fulfilled:</i><br/>
