@@ -39,10 +39,12 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -94,10 +96,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int offsetY = -1;
 	
 	// instances to canvas and selection area, available for the cropper
-	private final AbsolutePanel _container;
+	private final AbsolutePanelImpl _container;
 	private AbsolutePanel handlesContainer;
-	private AbsolutePanel selectionContainer = new AbsolutePanel();
 	private HTML draggableBackground;
+	private LoadHandler onCavasLoadHandler;
 	
 	// settings
 	private float aspectRatio = 0;
@@ -105,6 +107,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
 	private int MIN_WIDTH = 30;
 	private int MIN_HEIGHT = 30;
+	
+	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 	
 	/**
 	 * Constructor with mandatory parameter of image's URL.
@@ -115,7 +119,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		super("");
 		
 		bundleResources.css().ensureInjected();
-		this._container = new AbsolutePanel();
+		this._container = new AbsolutePanelImpl();
 		this.addCanvas(strImageURL);
 		
 		addDomHandler(this, MouseMoveEvent.getType());
@@ -248,13 +252,13 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		if (width > MIN_WIDTH) 
 			this.nInnerWidth = width;
 		
-		if (height > MIN_WIDTH)
+		if (height > MIN_HEIGHT)
 			this.nInnerHeight = height;
 		
-		if (x > 0)
+		if (x >= 0)
 			this.nInnerX = x;
 		
-		if (y > 0)
+		if (y >= 0)
 			this.nInnerY = y;
 	}
 	
@@ -275,6 +279,16 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	public void setMinimalHeight(int height) {
 		if (height > 30) this.MIN_HEIGHT = height;
+	}
+	
+	/**
+	 * Adds the {@link LoadEvent} handler to canvas. This event will be fired, when the canvas
+	 * image is loaded and its dimensions are available.
+	 * 
+	 * @param handler
+	 */
+	public void addCanvasLoadHandler(LoadHandler handler) {
+		this.onCavasLoadHandler = handler;
 	}
 	
 	// --------- private methods ------------
@@ -298,6 +312,9 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				_container.setWidth(nOuterWidth + "px");
 				_container.setHeight(nOuterHeight + "px");
 				addSelection(src);
+				
+				if (null != onCavasLoadHandler) 
+					onCavasLoadHandler.onLoad(event);
 			}
 			
 		});
@@ -318,8 +335,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		selectionContainer.setWidth(this.nInnerWidth + "px");
 		selectionContainer.setHeight(this.nInnerHeight + "px");
 		
-		// add background image for selection
-		selectionContainer.add(new Image(src), -this.nInnerX - 1, -this.nInnerY - 1);
+		// add background image for the selection 
+		selectionContainer.add(new Image(src), -this.nInnerX - 1,  -this.nInnerY - 1);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
 		
 		this.buildSelectionArea();
@@ -477,8 +494,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void provideDragging(int cursorX, int cursorY) {
 		
-		Element el = null; // handle's container
-		Element el2 = null; // selection's container
+		Element elH = null; // handle's container
+		Element elS = null; // selection's container
 		Element elImg = null;
 		
 		int futureWidth = 0;
@@ -496,7 +513,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					offsetY = cursorY - _container.getWidgetTop(this.handlesContainer);
 				}
 				
-				el = this.handlesContainer.getElement();
+				elH = this.handlesContainer.getElement();
 				
 				this.nInnerX = cursorX - offsetX;
 				this.nInnerY = cursorY - offsetY;
@@ -507,12 +524,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth) this.nInnerX = this.nOuterWidth - this.nInnerWidth;
 				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight) this.nInnerY = this.nOuterHeight - this.nInnerHeight;
 				
-				el.getStyle().setLeft(this.nInnerX, Unit.PX);
-				el.getStyle().setTop(this.nInnerY, Unit.PX);
+				elH.getStyle().setLeft(this.nInnerX, Unit.PX);
+				elH.getStyle().setTop(this.nInnerY, Unit.PX);
 				
-				el2 = this.selectionContainer.getElement();
-				el2.getStyle().setLeft(this.nInnerX, Unit.PX);
-				el2.getStyle().setTop(this.nInnerY, Unit.PX);
+				elS = this.selectionContainer.getElement();
+				elS.getStyle().setLeft(this.nInnerX, Unit.PX);
+				elS.getStyle().setTop(this.nInnerY, Unit.PX);
 				
 				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
 				elImg.getStyle().setLeft(-this.nInnerX - 1, Unit.PX);
@@ -575,18 +592,18 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					}
 				}
 				
-				el = this.handlesContainer.getElement();
+				elH = this.handlesContainer.getElement();
 				
-				el.getStyle().setLeft(this.nInnerX, Unit.PX);
-				el.getStyle().setTop(this.nInnerY, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elH.getStyle().setLeft(this.nInnerX, Unit.PX);
+				elH.getStyle().setTop(this.nInnerY, Unit.PX);
+				elH.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
-				el2 = this.selectionContainer.getElement();
-				el2.getStyle().setLeft(this.nInnerX, Unit.PX);
-				el2.getStyle().setTop(this.nInnerY, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elS = this.selectionContainer.getElement();
+				elS.getStyle().setLeft(this.nInnerX, Unit.PX);
+				elS.getStyle().setTop(this.nInnerY, Unit.PX);
+				elS.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
 				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
 				elImg.getStyle().setLeft(-this.nInnerX - 1, Unit.PX);
@@ -653,16 +670,16 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				this.nInnerY = cursorY;
 				
-				el = this.handlesContainer.getElement();
+				elH = this.handlesContainer.getElement();
 				
-				el.getStyle().setTop(cursorY, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elH.getStyle().setTop(cursorY, Unit.PX);
+				elH.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
-				el2 = this.selectionContainer.getElement();
-				el2.getStyle().setTop(cursorY, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elS = this.selectionContainer.getElement();
+				elS.getStyle().setTop(cursorY, Unit.PX);
+				elS.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
 				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
 				elImg.getStyle().setTop(-cursorY - 1, Unit.PX);
@@ -729,16 +746,16 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				this.nInnerX = cursorX;
 				
-				el = this.handlesContainer.getElement();
+				elH = this.handlesContainer.getElement();
 				
-				el.getStyle().setLeft(cursorX, Unit.PX);
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elH.getStyle().setLeft(cursorX, Unit.PX);
+				elH.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
-				el2 = this.selectionContainer.getElement();
-				el2.getStyle().setLeft(cursorX, Unit.PX);
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elS = this.selectionContainer.getElement();
+				elS.getStyle().setLeft(cursorX, Unit.PX);
+				elS.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
 				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
 				elImg.getStyle().setLeft(-cursorX - 1, Unit.PX);
@@ -799,13 +816,13 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					}
 				}
 				
-				el = this.handlesContainer.getElement();
-				el.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elH = this.handlesContainer.getElement();
+				elH.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
-				el2 = this.selectionContainer.getElement();
-				el2.getStyle().setWidth(nInnerWidth, Unit.PX);
-				el2.getStyle().setHeight(nInnerHeight, Unit.PX);
+				elS = this.selectionContainer.getElement();
+				elS.getStyle().setWidth(nInnerWidth, Unit.PX);
+				elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 				
 				el3 = this.draggableBackground.getElement();
 				el3.getStyle().setWidth(nInnerWidth, Unit.PX);
@@ -928,4 +945,29 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void onTouchEnd(TouchEndEvent event) {
 		this.resetDraggingState();
 	}
+	
+	/**
+	 * Absolute panel with one overrided method, that prevents a static positioning
+	 * when a widget has (-1, -1) coordinates.
+	 * 
+	 * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
+	 *
+	 */
+	private static class AbsolutePanelImpl extends AbsolutePanel {
+		
+		/**
+		 * Original method causes the child widget to be positioned statically,
+		 * if the left and top are (-1, -1). In our case the background could be positioned
+		 * (-1,-1), when the selected area is placed on the top left corner.
+		 * 
+		 * @See com.google.gwt.user.client.ui.AbsolutePanel.setWidgetPosition(Widget, int, int)
+		 */
+		@Override
+		protected void setWidgetPositionImpl(Widget w, int left, int top) {
+			com.google.gwt.user.client.Element h = w.getElement();
+			DOM.setStyleAttribute(h, "position", "absolute");
+			DOM.setStyleAttribute(h, "left", left + "px");
+			DOM.setStyleAttribute(h, "top", top + "px");
+		}
+	};
 }
