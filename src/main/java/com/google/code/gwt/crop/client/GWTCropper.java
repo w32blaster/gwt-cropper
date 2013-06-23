@@ -72,8 +72,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private final ICropperStyleSource bundleResources = GWT.create(ICropperStyleSource.class);
 	
 	// canvas sizes
-	private int nOuterWidth;
-	private int nOuterHeight;
+	private int nOuterWidth = -1;
+	private int nOuterHeight = -1;
 	
 	// selection coordinates
 	private int nInnerX = -1;
@@ -291,6 +291,38 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.onCavasLoadHandler = handler;
 	}
 	
+	/**
+	 * Sets the cropper's size. 
+	 * 
+	 * @param width integer in px
+	 * @param height integer in px
+	 */
+	public void setSize(int width, int height) {
+		
+		// size of parent panel, that holds this widget
+		super.setSize(width + "px", height + "px");
+		
+		this.nOuterWidth = width;
+		this.nOuterHeight = height;
+	};
+	
+	
+	/**
+	 * <i><b>Deprecated.</b> This method sets the size only for parent element, but not for the whole widget.
+	 * Use method {@link com.google.code.gwt.crop.client.GWTCropper#setSize(int, int) setSize(int width, int height)} instead.</i>
+	 * 
+	 * <p />
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see com.google.gwt.user.client.ui.UIObject#setSize(java.lang.String, java.lang.String)
+	 */
+	@Override
+	@Deprecated
+	public void setSize(String width, String height) {
+		super.setSize(width, height);
+	};
+	
 	// --------- private methods ------------
 	
 	/**
@@ -307,8 +339,13 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		image.addLoadHandler(new LoadHandler() {
 
 			public void onLoad(LoadEvent event) {
-				nOuterWidth = image.getWidth();
-				nOuterHeight = image.getHeight();
+				// get original image size
+				if (nOuterWidth == -1) nOuterWidth = image.getWidth();
+				if (nOuterHeight == -1) nOuterHeight = image.getHeight();
+				
+				DOM.setElementProperty(image.getElement(), "width", nOuterWidth + "");
+				DOM.setElementProperty(image.getElement(), "height", nOuterHeight + "");
+				
 				_container.setWidth(nOuterWidth + "px");
 				_container.setHeight(nOuterHeight + "px");
 				addSelection(src);
@@ -335,8 +372,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		selectionContainer.setWidth(this.nInnerWidth + "px");
 		selectionContainer.setHeight(this.nInnerHeight + "px");
 		
-		// add background image for the selection 
-		selectionContainer.add(new Image(src), -this.nInnerX - 1,  -this.nInnerY - 1);
+		// add background image for the selection
+		Image imgSelectionBg = new Image(src);
+		if (nOuterWidth != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "width", nOuterWidth + "");
+		if (nOuterHeight != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "height", nOuterHeight + "");
+		
+		selectionContainer.add(imgSelectionBg, -this.nInnerX - 1,  -this.nInnerY - 1);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
 		
 		this.buildSelectionArea();
@@ -969,5 +1010,5 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			DOM.setStyleAttribute(h, "left", left + "px");
 			DOM.setStyleAttribute(h, "top", top + "px");
 		}
-	};
+	}
 }
