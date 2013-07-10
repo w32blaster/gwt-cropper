@@ -105,8 +105,9 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private float aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
-	private int MIN_WIDTH = 30;
-	private int MIN_HEIGHT = 30;
+	private int HANDLE_SIZE = this.bundleResources.css().handleSize();
+	private int MIN_WIDTH = this.HANDLE_SIZE;
+	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 	
@@ -426,7 +427,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		}
 
 		// minimal width couldn't be more, than initial selection.
-		if (this.MIN_WIDTH > this.nInnerWidth) this.MIN_WIDTH = 30;
+		if (this.MIN_WIDTH > this.nInnerWidth) this.MIN_WIDTH = this.HANDLE_SIZE;
 		
 		final boolean isDefaultHeight = this.nInnerY == -1 && this.nInnerHeight == -1;
 		final boolean isInvalidHeightY = this.nOuterHeight < (this.nInnerY + this.nInnerHeight);
@@ -436,8 +437,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			this.nInnerHeight = (int) ( (this.aspectRatio == 0) ? (nOuterHeight * 0.2) : (nInnerWidth / aspectRatio) );
 		}
 		
-		// minimal height couldn't be more, than initial selectin.
-		if (this.MIN_HEIGHT > this.nInnerHeight) this.MIN_HEIGHT = 30;
+		// minimal height couldn't be more, than initial selection.
+		if (this.MIN_HEIGHT > this.nInnerHeight) this.MIN_HEIGHT = this.HANDLE_SIZE;
 	}
 
 	/**
@@ -460,7 +461,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.draggableBackground = this.appendDraggableBackground();
 		
 		// find the center of draggable handle to make an offset for the positioning
-		final int h = this.bundleResources.css().handleSize() / 2;
+		final int h = this.HANDLE_SIZE / 2;
 
 		// append top left corner handler
 		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -h, 0, 0, -h);
