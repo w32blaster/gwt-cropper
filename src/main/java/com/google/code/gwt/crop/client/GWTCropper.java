@@ -49,8 +49,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 
  * <h1>GWT Cropper</h1>
- * <p><b>GWT Cropper</b> - widget that allows you to select some area on top of a picture and retrieve coordinates
- *  of this selection. It might be useful, if you want to crop a picture.</p>
+ * <p><b>GWT Cropper</b> - widget that allows you to select an area of a picture and get the coordinates of this selection. It is useful, if you want to crop a picture.</p>
  * 
  * <h1>Example</h1>
  * <p>Usage example:
@@ -60,6 +59,7 @@ import com.google.gwt.user.client.ui.Widget;
  * panel.add(crop);
  * </pre>
  * </p>
+ * 
  * 
  * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  * 
@@ -133,14 +133,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	// ---------- Public API ------------------
 	
 	/**
-	 * <p>Sets the aspect ratio (proportion of width to height) for the selection.</p>
+	 * <p>Sets the fixed aspect ratio (proportion of width to height) for the selection.</p>
 	 * 
 	 * <p> Examples:
 	 * <ul>
 	 * <li><b>Default</b> is 0 that means the selection can have any shape.</li>
-	 * <li>Ratio is 1/1=1 that means the selection has a square shape.</li>
-	 * <li>Ratio 2/1=2 the selection has a rectangular shape where width is twice as longer as height</li>
-	 * <li>Ratio 1/2=0.5 the selection has a rectangular shape where height is twice as higher as width</li>
+	 * <li>Ratio is 1/1=1 that means the selection has a square shape.<br/>
+	 * <img width='185' height='130' src='doc-files/square.jpeg'/></li>
+	 * <li>Ratio 2/1=2 the selection has a rectangular shape where width is twice as longer as height<br />
+	 * <img width='184' height='130' src='doc-files/rec21.jpeg'/></li>
+	 * <li>Ratio 1/2=0.5 the selection has a rectangular shape where height is twice as higher as width<br />
+	 * <img width='188' height='131' src='doc-files/rec12.jpeg'/></li>
 	 * </ul>
 	 * </p>
 	 * 
@@ -159,7 +162,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the X coordinate of the selection top left corner
+	 * <p>Get the X coordinate of the selection top left corner</p>
+	 * 
+	 * <p>
+	 * <img width='204' height='151' src='doc-files/selection-x-coordinate.jpeg'/>
+	 * </p>
 	 * 
 	 * @return X coordinate
 	 */
@@ -168,7 +175,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the Y coordinate of the selection top left corner
+	 * <p>Get the Y coordinate of the selection top left corner</p>
+	 * 
+	 * <p>
+	 * <img width='211' height='150' src='doc-files/selection-y-coordinate.jpeg'/>
+	 * </p>
 	 * 
 	 * @return Y coordinate
 	 */
@@ -177,7 +188,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the width of the selection area
+	 * <p>Get the width of the selection area</p>
+	 * 
+	 * <p>
+	 * <img width='192' height='133' src='doc-files/selection_width.jpeg'/>
+	 * </p>
 	 * 
 	 * @return width in pixels
 	 */
@@ -186,8 +201,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the height of the selection area
+	 * <p>Get the height of the selection area</p>
 	 * 
+	 * <p>
+	 * <img width='208' height='150' src='doc-files/selection_height.jpeg'/>
+	 * </p>
 	 * @return height in pixels
 	 */
 	public int getSelectionHeight() {
@@ -195,7 +213,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the canvas height (original image you wish to crop)
+	 * <p>Get the canvas height (original image you wish to crop)</p>
+	 * 
+	 * <p>
+	 * <img width='252' height='175' src='doc-files/canvas_height.jpeg'/>
+	 * </p>
 	 * 
 	 * @return height in PX
 	 */
@@ -204,7 +226,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 	
 	/**
-	 * Get the canvas width (original image you wish to crop)
+	 * <p>Get the canvas width (original image you wish to crop)</p>
+	 * 
+	 * <p>
+	 * <img width='189' height='171' src='doc-files/canvas_width.jpeg'/>
+	 * </p>
 	 * 
 	 * @return width in PX
 	 */
@@ -228,12 +254,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	/**
 	 * <p>Sets the initial size and position for the selected area.</p>
 	 * 
-	 * <p><i>Note, that all the incoming data will be validated. Thus, these requirements *must* be fulfilled:</i><br/>
+	 * <p><i>Note, that all the incoming data will be validated. Thus, these requirements *must* be fulfilled:</i><br/><br/>
 	 * <code>
 	 *       canvas width > (initial selection X + initial selection width) <br />
 	 *       canvas height > (initial selection Y + initial selection height)
 	 * </code>
-	 * <br />
+	 * <br /><br/>
 	 * Otherwise default values will be used.
 	 * </p>
 	 * 
