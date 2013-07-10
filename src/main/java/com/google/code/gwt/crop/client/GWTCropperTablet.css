@@ -1,5 +1,6 @@
 @CHARSET "UTF-8";
 
+/* recommended to choose a value that is divisible by 2 */
 @def handleSize 30px;
 
 .base {
