@@ -19,6 +19,9 @@
 		<developer>
 			<name>Ilja Hämäläinen</name>
 			<organization>Comptel Corp.</organization>
+			<organizationUrl>http://www.comptel.com/</organizationUrl>
+			<email>ilja.hamalainen@gmail.com</email>
+			<timezone>2</timezone>
 		</developer>
 	</developers>
 
