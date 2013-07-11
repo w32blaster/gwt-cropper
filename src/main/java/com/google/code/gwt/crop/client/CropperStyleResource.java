@@ -7,7 +7,7 @@ import com.google.gwt.resources.client.CssResource;
  * 
  * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  */
-interface CropperStyleResource extends CssResource {
+public interface CropperStyleResource extends CssResource {
 
 	String base();
     String imageCanvas();
@@ -19,7 +19,7 @@ interface CropperStyleResource extends CssResource {
     /**
      * Declares the size of a handle. Assume, that it has the equal width and height
      * 
-     * @return handle size in pixels
+     * @return handle size in pixels, int
      */
     int handleSize();
 }
