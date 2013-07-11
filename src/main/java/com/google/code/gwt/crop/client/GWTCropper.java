@@ -134,15 +134,19 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	// ---------- Public API ------------------
 	
 	/**
-	 * <p>Sets the fixed aspect ratio (proportion of width to height) for the selection.</p>
+	 * <p>Sets the fixed aspect ratio (proportion of width to height) for the selection. 
+	 * User is able to change the size of a selected area, but the proportion of its dimension will be kept.</p>
 	 * 
 	 * <p> Examples:
 	 * <ul>
 	 * <li><b>Default</b> is 0 that means the selection can have any shape.</li>
+	 * 
 	 * <li>Ratio is 1/1=1 that means the selection has a square shape.<br/>
 	 * <img width='185' height='130' src='doc-files/square.jpeg'/></li>
+	 * 
 	 * <li>Ratio 2/1=2 the selection has a rectangular shape where width is twice as longer as height<br />
 	 * <img width='184' height='130' src='doc-files/rec21.jpeg'/></li>
+	 * 
 	 * <li>Ratio 1/2=0.5 the selection has a rectangular shape where height is twice as higher as width<br />
 	 * <img width='188' height='131' src='doc-files/rec12.jpeg'/></li>
 	 * </ul>
@@ -463,24 +467,29 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		// find the center of draggable handle to make an offset for the positioning
 		final int h = this.HANDLE_SIZE / 2;
 
-		// append top left corner handler
-		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -h, 0, 0, -h);
+		/*
+			1px and 2px below are correction because of 1px border. 
+			We need to position handle exactly on the center of the selection corner.
+		*/
+
+		// append top left corner handler. 
+		this.appendHandle(Cursor.NW_RESIZE, Constants.DRAG_TOP_LEFT_CORNER, -h, 0, 0, -(h + 1));
 		
 		// append top right corner handler
-		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -h, -h, 0, 0);
+		this.appendHandle(Cursor.NE_RESIZE, Constants.DRAG_TOP_RIGHT_CORNER, -h, -(h + 2), 0, 0);
 		
 		// append bottom left corner handler
-		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -h, -h);
+		this.appendHandle(Cursor.SW_RESIZE, Constants.DRAG_BOTTOM_LEFT_CORNER, 0, 0, -(h + 2), -(h + 1));
 		
 		// append bottom right corner handler
-		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -h, -h, 0);
+		this.appendHandle(Cursor.SE_RESIZE, Constants.DRAG_BOTTOM_RIGHT_CORNER, 0, -(h + 2), -(h + 2), 0);
 		
 		return handlesContainer;
 	}
 
 	/**
-	 * Creates small draggable selection handle and appends it to the corner of selection area. User can drag 
-	 * this handle and change shape of the selection area
+	 * Creates one small draggable selection handle and appends it to the corner of selection area. 
+	 * User can drag this handle to change shape of the selection area
 	 * 
 	 * @param cursor cursor type for the CSS
 	 * @param actionType action type for the event processor
