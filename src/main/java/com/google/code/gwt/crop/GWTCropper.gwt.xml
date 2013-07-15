@@ -32,7 +32,10 @@
 
 	<replace-with class="com.google.code.gwt.crop.client.StylesTabletImpl">
 		<when-type-is class="com.google.code.gwt.crop.client.ICropperStyleSource" />
-		<when-property-is name="formfactor" value="tablet" />
+		<any>
+			<when-property-is name="formfactor" value="tablet" />
+			<when-property-is name="formfactor" value="mobile" />
+		</any>
 	</replace-with>
 	
 </module>

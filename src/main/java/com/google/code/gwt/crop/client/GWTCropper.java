@@ -1,6 +1,5 @@
 /**
- * Copyright 2011 ArcBees Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
@@ -63,7 +62,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  * 
- * @see <a href="https://code.google.com/p/gwt-cropper/">GWT Cropper home page</a>
+ * @see <a href="http://code.google.com/p/gwt-cropper/">GWT Cropper home page</a>
  * 
  */
 public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHandler, MouseOutHandler,
@@ -135,13 +134,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	
 	/**
 	 * <p>Sets the fixed aspect ratio (proportion of width to height) for the selection. 
-	 * User is able to change the size of a selected area, but the proportion of its dimension will be kept.</p>
+	 * User is able to change the size of a selected area, but the proportion of its 
+	 * dimension will be kept unchanged.</p>
 	 * 
 	 * <p> Examples:
 	 * <ul>
 	 * <li><b>Default</b> is 0 that means the selection can have any shape.</li>
 	 * 
-	 * <li>Ratio is 1/1=1 that means the selection has a square shape.<br/>
+	 * <li>Ratio is 1/1=1 that means the selection has a square shape.<br />
 	 * <img width='185' height='130' src='doc-files/square.jpeg'/></li>
 	 * 
 	 * <li>Ratio 2/1=2 the selection has a rectangular shape where width is twice as longer as height<br />
