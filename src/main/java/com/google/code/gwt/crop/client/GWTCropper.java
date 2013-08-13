@@ -381,6 +381,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				_container.setHeight(nOuterHeight + "px");
 				addSelection(src);
 				
+				setSize(nOuterWidth, nOuterHeight);
+				
 				if (null != onCavasLoadHandler) 
 					onCavasLoadHandler.onLoad(event);
 			}
