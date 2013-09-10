@@ -1011,7 +1011,25 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void onMouseOut(MouseOutEvent event) {
 		
 		/*
-		 * if cursor is out of canvas and the mouse is clicked,
+		 * When the cursor is out of the canvas, we want to
+		 * snap the selection to appropriate canvas border. So, before
+		 * we reset the dragging action, let's drag handle last time.
+		 * 
+		 * @see Issue 12.
+		 */
+		int x = event.getRelativeX(this._container.getElement());
+		int y = event.getRelativeY(this._container.getElement());
+		
+		// correct coordinates, that are out of canvas
+		if (x < 0) x = 0;
+		if (x > this.nOuterWidth) x = this.nOuterWidth;
+		if (y < 0) y = 0;
+		if (y > this.nOuterHeight) x = this.nOuterHeight;
+		
+		this.provideDragging(x, y);
+		
+		/*
+		 * if cursor is out of canvas and the mouse button is pressed,
 		 * then we want to "unclick" the mouse button programmatically.
 		 * Otherwise the selection would become "sticky".
 		 */
