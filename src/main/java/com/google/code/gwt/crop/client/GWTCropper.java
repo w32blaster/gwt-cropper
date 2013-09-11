@@ -376,6 +376,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				DOM.setElementProperty(image.getElement(), "width", nOuterWidth + "");
 				DOM.setElementProperty(image.getElement(), "height", nOuterHeight + "");
+				image.getElement().getStyle().setPropertyPx("maxWidth", nOuterWidth);
+				image.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
 				
 				_container.setWidth(nOuterWidth + "px");
 				_container.setHeight(nOuterHeight + "px");
@@ -407,8 +409,15 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		
 		// add background image for the selection
 		Image imgSelectionBg = new Image(src);
-		if (nOuterWidth != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "width", nOuterWidth + "");
-		if (nOuterHeight != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "height", nOuterHeight + "");
+		if (nOuterWidth != -1) {
+			DOM.setElementProperty(imgSelectionBg.getElement(), "width", nOuterWidth + "");
+			imgSelectionBg.getElement().getStyle().setPropertyPx("maxWidth", nOuterWidth);
+		}
+		
+		if (nOuterHeight != -1) {
+			DOM.setElementProperty(imgSelectionBg.getElement(), "height", nOuterHeight + "");
+			imgSelectionBg.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
+		}
 		
 		selectionContainer.add(imgSelectionBg, -this.nInnerX - 1,  -this.nInnerY - 1);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
