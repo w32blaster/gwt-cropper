@@ -1,5 +1,4 @@
 @CHARSET "UTF-8";
-
 /* recommended to choose a value that is divisible by 2 */
 @def handleSize 10px;
 
@@ -8,18 +7,18 @@
 	position: relative;
 }
 .imageCanvas {
-	opacity: 0.4;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
-    filter: alpha(opacity=40);
+    opacity: 0.4;
+    -ms-filter: literal("progid:DXImageTransform.Microsoft.Alpha(Opacity=40)");
+    filter: literal("alpha(opacity=40)");
 }
 .selection {
-	border: 1px dashed white;
-	background: #FFFFFF;
+    border: 1px dashed #FFFFFF;
+    background: #FFFFFF;
 }
 .selectionDraggableBackground {
-	/* we need this 'hack', because without this magic IE didn't see the draggable area */
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-    filter: alpha(opacity=0);
+    /* we need this 'hack', because without this magic IE didn't see the draggable area */
+    -ms-filter: literal("progid:DXImageTransform.Microsoft.Alpha(Opacity=0)");
+    filter: literal("alpha(opacity=0)");
     opacity: 0;
     background: #FFF;
 }
@@ -29,12 +28,12 @@
 .handle {
 	width: handleSize;
 	height: handleSize;
-	border: 1px solid white;
+	border: 1px solid #FFFFFF;
 	background: #FFFFFF;
 	position: absolute;
 	
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
-    filter: alpha(opacity=25);
+    -ms-filter: literal("progid:DXImageTransform.Microsoft.Alpha(Opacity=25)");
+    filter: literal("alpha(opacity=25)");
     opacity: 0.25;
 }
 
