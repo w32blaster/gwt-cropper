@@ -376,10 +376,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				DOM.setElementProperty(image.getElement(), "width", nOuterWidth + "");
 				DOM.setElementProperty(image.getElement(), "height", nOuterHeight + "");
+				image.getElement().getStyle().setPropertyPx("maxWidth", nOuterWidth);
+				image.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
 				
 				_container.setWidth(nOuterWidth + "px");
 				_container.setHeight(nOuterHeight + "px");
 				addSelection(src);
+				
+				setSize(nOuterWidth, nOuterHeight);
 				
 				if (null != onCavasLoadHandler) 
 					onCavasLoadHandler.onLoad(event);
@@ -405,8 +409,15 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		
 		// add background image for the selection
 		Image imgSelectionBg = new Image(src);
-		if (nOuterWidth != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "width", nOuterWidth + "");
-		if (nOuterHeight != -1) DOM.setElementProperty(imgSelectionBg.getElement(), "height", nOuterHeight + "");
+		if (nOuterWidth != -1) {
+			DOM.setElementProperty(imgSelectionBg.getElement(), "width", nOuterWidth + "");
+			imgSelectionBg.getElement().getStyle().setPropertyPx("maxWidth", nOuterWidth);
+		}
+		
+		if (nOuterHeight != -1) {
+			DOM.setElementProperty(imgSelectionBg.getElement(), "height", nOuterHeight + "");
+			imgSelectionBg.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
+		}
 		
 		selectionContainer.add(imgSelectionBg, -this.nInnerX - 1,  -this.nInnerY - 1);
 		this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
@@ -1009,7 +1020,25 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void onMouseOut(MouseOutEvent event) {
 		
 		/*
-		 * if cursor is out of canvas and the mouse is clicked,
+		 * When the cursor is out of the canvas, we want to
+		 * snap the selection to appropriate canvas border. So, before
+		 * we reset the dragging action, let's drag handle last time.
+		 * 
+		 * @see Issue 12.
+		 */
+		int x = event.getRelativeX(this._container.getElement());
+		int y = event.getRelativeY(this._container.getElement());
+		
+		// correct coordinates, that are out of canvas
+		if (x < 0) x = 0;
+		if (x > this.nOuterWidth) x = this.nOuterWidth;
+		if (y < 0) y = 0;
+		if (y > this.nOuterHeight) x = this.nOuterHeight;
+		
+		this.provideDragging(x, y);
+		
+		/*
+		 * if cursor is out of canvas and the mouse button is pressed,
 		 * then we want to "unclick" the mouse button programmatically.
 		 * Otherwise the selection would become "sticky".
 		 */
