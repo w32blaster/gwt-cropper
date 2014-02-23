@@ -22,28 +22,9 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Touch;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
-import com.google.gwt.event.dom.client.TouchMoveEvent;
-import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.event.dom.client.TouchStartEvent;
-import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
 /**
  * 
@@ -108,6 +89,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
+	private GWTCropperThumbImpl thumb;
+	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 	
 	/**
@@ -117,7 +100,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	public GWTCropper(String strImageURL) {
 		super("");
-		
+
 		bundleResources.css().ensureInjected();
 		this._container = new AbsolutePanelImpl();
 		this.addCanvas(strImageURL);
@@ -354,6 +337,18 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		super.setSize(width, height);
 	};
 	
+	/**
+	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperThumbImpl GWTCropperThumbImpl} widget.
+	 * 
+	 * @param thumbnailWidget
+	 */
+    public void registerCropperThumb(GWTCropperThumbImpl thumbnailWidget){
+        //allow only for rectangular shape
+        if (aspectRatio == 1){
+            this.thumb = thumbnailWidget;
+        }
+    };
+	
 	// --------- private methods ------------
 	
 	/**
@@ -370,6 +365,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		image.addLoadHandler(new LoadHandler() {
 
 			public void onLoad(LoadEvent event) {
+
+				//this is a bug in IE since v.8 - maxWidth collapse image 
+	            //and you cannot read its width - in some cases depends from CSS image extensions
+	            image.getElement().getStyle().setProperty("maxWidth","none");
+	            
 				// get original image size
 				if (nOuterWidth == -1) nOuterWidth = image.getWidth();
 				if (nOuterHeight == -1) nOuterHeight = image.getHeight();
@@ -387,6 +387,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				if (null != onCavasLoadHandler) 
 					onCavasLoadHandler.onLoad(event);
+				
+				if (null != thumb) {
+					thumb.init(src, nOuterWidth, nOuterHeight);
+				}
 			}
 			
 		});
@@ -960,6 +964,21 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			
 			this.provideDragging(event.getRelativeX(this._container.getElement()), 
 					event.getRelativeY(this._container.getElement()));
+			
+	        this.updatePreviewWidget();
+		}
+	}
+
+	/**
+	 * Update preview widget if needed.
+	 */
+	private void updatePreviewWidget() {
+		if (thumb != null) {
+		    thumb.updatePreview(
+		    		this.getSelectionWidth(),
+		    		this.getSelectionHeight(), 
+		    		this.getSelectionXCoordinate(),
+		    		this.getSelectionYCoordinate());
 		}
 	}
 	
