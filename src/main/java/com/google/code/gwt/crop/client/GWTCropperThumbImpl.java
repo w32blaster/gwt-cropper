@@ -90,19 +90,23 @@ public class GWTCropperThumbImpl extends SimplePanel {
         switch (this.fixedSide) {
             case WIDTH:
                 this.proportion = (double) this.fixedValue / (double) cropShapeWidth;
-                log(this.proportion + " = " + this.fixedValue + " / " + cropShapeWidth);
+
                 this.imageW = (int) ( (this.cropCanvasWidth * this.fixedValue) / cropShapeWidth);
                 this.imageH = (int) ( (this.imageW * this.cropCanvasHeight) / this.cropCanvasWidth);
                 this.height = (int) ( (cropShapeHeight * this.fixedValue) / cropShapeWidth);
                 break;
 
             case HEIGHT:
-                // not implemented yet
+                this.proportion = (double) this.fixedValue / (double) cropShapeHeight;
+
+                this.imageH = (int) (this.cropCanvasHeight * this.fixedValue / cropShapeHeight);
+                this.imageW = (int) (this.imageH * this.cropCanvasWidth / this.cropCanvasHeight);
+                this.width = (int) (cropShapeWidth * this.fixedValue / cropShapeHeight);
                 break;
         }
 
-        double left = this.proportion * cropLeft;
-        double top = this.proportion * cropTop;
+        final double left = this.proportion * cropLeft;
+        final double top = this.proportion * cropTop;
         this.embededImage.getElement().getStyle().setMarginLeft(-left, Unit.PX);
         this.embededImage.getElement().getStyle().setMarginTop(-top, Unit.PX);
 
