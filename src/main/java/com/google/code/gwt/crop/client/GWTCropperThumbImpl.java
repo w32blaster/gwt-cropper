@@ -1,5 +1,6 @@
 package com.google.code.gwt.crop.client;
 
+import com.google.code.gwt.crop.client.common.Dimension;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Image;
@@ -16,20 +17,45 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @version %I%, %G%
  */
 public class GWTCropperThumbImpl extends SimplePanel {
+
+    /**Because crop image can be scaled. We have to remember its width and height
+     * to future recounting */
+    private int imageW, imageH;
     
     private int cropCanvasWidth; 
     private int cropCanvasHeight;
-    
-    private int heightScaleDivisor = -1;
-    private int widthScaleDivisor = -1;
-    
+
+    // this widget dimensions
+    private int width;
+    private int height;
+
     private Image embededImage;
-    
-    private final double proportion;
-    
-    public GWTCropperThumbImpl(double proportion){
-        this.proportion = proportion; 
-        setStyleProperties();
+
+    private final Dimension fixedSide;
+    private final int fixedValue;
+    private double proportion;
+
+    /**
+     * TODO: add description here
+     *
+     * @param dimension - size, that will be remain constantly (width or height)
+     * @param value - value of that side in px
+     */
+    public GWTCropperThumbImpl(Dimension dimension, int value){
+        this.fixedSide = dimension;
+        this.fixedValue = value;
+
+        switch (this.fixedSide) {
+            case WIDTH:
+                this.width = value;
+                getElement().getStyle().setWidth(value, Unit.PX);
+                break;
+
+            case HEIGHT:
+                this.height = value;
+                getElement().getStyle().setHeight(value, Unit.PX);
+                break;
+        }
     }
     
     // API available for inner usage of the GWTCropper
@@ -47,7 +73,7 @@ public class GWTCropperThumbImpl extends SimplePanel {
         
         this.cropCanvasWidth = canvasWidth;
         this.cropCanvasHeight = canvasHeight;
-        setImageStyleProperty();
+        this.setImageStyleProperty();
         add(embededImage);
     }
 
@@ -60,27 +86,41 @@ public class GWTCropperThumbImpl extends SimplePanel {
      * @param cropTop
      */
     void updatePreview(int cropShapeWidth, int cropShapeHeight, int cropLeft, int cropTop) {
-        double left = (-1) * Math.round(this.proportion * cropLeft);
-        double top = (-1) * Math.round(this.proportion * cropTop);
-        this.embededImage.getElement().getStyle().setMarginLeft(left, Unit.PX);
-        this.embededImage.getElement().getStyle().setMarginTop(top, Unit.PX);
-        this.embededImage.setSize(
-        		Math.round((cropCanvasWidth * this.proportion) / cropShapeWidth ) + "px", 
-        		Math.round((cropCanvasHeight * this.proportion) / cropShapeHeight )+ "px");
+
+        switch (this.fixedSide) {
+            case WIDTH:
+                this.proportion = (double) this.fixedValue / (double) cropShapeWidth;
+                log(this.proportion + " = " + this.fixedValue + " / " + cropShapeWidth);
+                this.imageW = (int) ( (this.cropCanvasWidth * this.fixedValue) / cropShapeWidth);
+                this.imageH = (int) ( (this.imageW * this.cropCanvasHeight) / this.cropCanvasWidth);
+                this.height = (int) ( (cropShapeHeight * this.fixedValue) / cropShapeWidth);
+                break;
+
+            case HEIGHT:
+                // not implemented yet
+                break;
+        }
+
+        double left = this.proportion * cropLeft;
+        double top = this.proportion * cropTop;
+        this.embededImage.getElement().getStyle().setMarginLeft(-left, Unit.PX);
+        this.embededImage.getElement().getStyle().setMarginTop(-top, Unit.PX);
+
+        this.embededImage.setSize(this.imageW + "px", this.imageH + "px");
+
+        // change this widget size
+        getElement().getStyle().setWidth(this.width, Unit.PX);
+        getElement().getStyle().setHeight(this.height, Unit.PX);
     }
     
     // Private methods
-    
-    /**
-     * Applies necessary styling for the widget
-     */
-    private void setStyleProperties(){
-        getElement().getStyle().setOverflow(Overflow.HIDDEN);
-        getElement().getStyle().setWidth(100, Unit.PX);
-        getElement().getStyle().setHeight(100, Unit.PX);
-    }
-  
+
     private void setImageStyleProperty(){
+        getElement().getStyle().setOverflow(Overflow.HIDDEN);
         this.embededImage.getElement().getStyle().setProperty("maxWidth","none");
-    }    
+    }
+
+    public static native void log(String msg) /*-{
+        console.log(msg);
+    }-*/;
 }
