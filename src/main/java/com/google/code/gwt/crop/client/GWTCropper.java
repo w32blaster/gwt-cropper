@@ -343,10 +343,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @param thumbnailWidget
 	 */
     public void registerCropperThumb(GWTCropperThumbImpl thumbnailWidget){
-        //allow only for rectangular shape
-        if (aspectRatio == 1){
-            this.thumb = thumbnailWidget;
-        }
+        this.thumb = thumbnailWidget;
     };
 	
 	// --------- private methods ------------
