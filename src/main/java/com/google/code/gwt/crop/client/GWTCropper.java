@@ -89,7 +89,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
-	private GWTCropperThumbImpl thumb;
+	private GWTCropperPreview thumb;
 	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 	
@@ -338,11 +338,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	};
 	
 	/**
-	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperThumbImpl GWTCropperThumbImpl} widget.
+	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview GWTCropperThumbImpl} widget.
 	 * 
 	 * @param thumbnailWidget
 	 */
-    public void registerCropperThumb(GWTCropperThumbImpl thumbnailWidget){
+    public void registerCropperThumb(GWTCropperPreview thumbnailWidget){
         this.thumb = thumbnailWidget;
     };
 	
