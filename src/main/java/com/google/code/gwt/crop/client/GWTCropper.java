@@ -139,10 +139,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * <pre> cropper.setAspectRatio( (float) 1/2); </pre>
 	 * </p>
 	 * 
-	 * @param acpectRatio - float value, proportion width/height
+	 * @param aspectRatio - float value, proportion width/height
 	 */
-	public void setAspectRatio(float acpectRatio) {
-		this.aspectRatio = acpectRatio;
+	public void setAspectRatio(float aspectRatio) {
+		this.aspectRatio = aspectRatio;
 	}
 	
 	public float getAspectRatio() {
@@ -391,6 +391,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				if (null != thumb) {
 					thumb.init(src, nOuterWidth, nOuterHeight);
 				}
+
+                updatePreviewWidget();
 			}
 			
 		});
@@ -545,10 +547,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	
 	
 	/**
-	 * Append draggable selection background
-	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
+	 * Append draggable background for the selection area
 	 */
 	private HTML appendDraggableBackground() {
 		
