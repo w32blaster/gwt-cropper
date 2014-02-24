@@ -7,8 +7,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
- * <p><b>Thumbnail</b> - special widget panel that
- * shows the selected area in separate panel (i.e. "preview" area).</p>
+ * <p><b>GWTCropperPreview</b> - special widget that
+ * shows the selected area in separate panel (i.e. "cropping preview" area).</p>
  * 
  * @author Dawid Dziewulski
  * @author Ilja Hämäläinen
@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @since 0.5.0
  * @version %I%, %G%
  */
-public class GWTCropperThumbImpl extends SimplePanel {
+public class GWTCropperPreview extends SimplePanel {
 
     /**Because crop image can be scaled. We have to remember its width and height
      * to future recounting */
@@ -29,19 +29,39 @@ public class GWTCropperThumbImpl extends SimplePanel {
     private int width;
     private int height;
 
-    private Image embededImage;
+    private Image embeddedImage;
 
     private final Dimension fixedSide;
     private final int fixedValue;
     private double proportion;
 
     /**
-     * TODO: add description here
+     * <p>Initiates the preview widget, that shows only selected area (i.e. "cropping preview").</p>
      *
-     * @param dimension - size, that will be remain constantly (width or height)
-     * @param value - value of that side in px
+     * <p>Usage examples:
+     * 		<ul>
+     * 			<li><pre>GWTCropperPreview(Dimension.WIDTH, 100)</pre> 
+     * 				- in this case the width of preview widget will be constantly 100px, but the
+     * 				height will be adjusted according of the selection proportion.<br />
+     * 
+     * 				<img width='95' height='161' src='doc-files/preview-fixed-width.jpg'/></li>
+     * 
+     *      	<li><pre>GWTCropperPreview(Dimension.HEIGHT, 100)</pre> 
+     * 				- in this case the height of preview widget will be constantly 100px, but the
+     * 				width will be adjusted accordingly of the selection proportion.<br />
+     * 
+     * 				<img width='161' height='95' src='doc-files/preview-fixed-height.jpg'/></li>
+     * 
+     * 			<li>If you set the <strong>aspect ratio = 1</strong> (square selection shape), then you can specify any
+     * 				dimension either width or height. Both variants will give you the same result.</li>
+     * 		<ul>
+     * </p>
+     *
+     * @param dimension the widget side,
+     *                  that will be remain constantly (Dimension.WIDTH or Dimension.HEIGHT)
+     * @param value length of that side in px
      */
-    public GWTCropperThumbImpl(Dimension dimension, int value){
+    public GWTCropperPreview(Dimension dimension, int value){
         this.fixedSide = dimension;
         this.fixedValue = value;
 
@@ -61,7 +81,8 @@ public class GWTCropperThumbImpl extends SimplePanel {
     // API available for inner usage of the GWTCropper
     
     /**
-     * For internal usage. GWTCropper initializes this widget, after 
+     * For internal usage only.
+     * GWTCropper initializes this widget, after
      * image will be loaded and all the dimensions will be known
      * 
      * @param imageUrl - image URL for preview
@@ -69,15 +90,16 @@ public class GWTCropperThumbImpl extends SimplePanel {
      * @param canvasHeight
      */
     void init(String imageUrl, int canvasWidth, int canvasHeight) {
-        this.embededImage = new Image(imageUrl);
+        this.embeddedImage = new Image(imageUrl);
         
         this.cropCanvasWidth = canvasWidth;
         this.cropCanvasHeight = canvasHeight;
         this.setImageStyleProperty();
-        add(embededImage);
+        add(embeddedImage);
     }
 
     /**
+     * For internal usage only.
      * Updates preview area regarding the current selection of GWTCropper
      * 
      * @param cropShapeWidth
@@ -91,26 +113,26 @@ public class GWTCropperThumbImpl extends SimplePanel {
             case WIDTH:
                 this.proportion = (double) this.fixedValue / (double) cropShapeWidth;
 
-                this.imageW = (int) ( (this.cropCanvasWidth * this.fixedValue) / cropShapeWidth);
-                this.imageH = (int) ( (this.imageW * this.cropCanvasHeight) / this.cropCanvasWidth);
-                this.height = (int) ( (cropShapeHeight * this.fixedValue) / cropShapeWidth);
+                this.imageW = (int) (this.cropCanvasWidth * this.proportion);
+                this.imageH = this.imageW * this.cropCanvasHeight / this.cropCanvasWidth;
+                this.height = (int) (cropShapeHeight * this.proportion);
                 break;
 
             case HEIGHT:
                 this.proportion = (double) this.fixedValue / (double) cropShapeHeight;
 
-                this.imageH = (int) (this.cropCanvasHeight * this.fixedValue / cropShapeHeight);
-                this.imageW = (int) (this.imageH * this.cropCanvasWidth / this.cropCanvasHeight);
-                this.width = (int) (cropShapeWidth * this.fixedValue / cropShapeHeight);
+                this.imageH = (int) (this.cropCanvasHeight * this.proportion);
+                this.imageW = this.imageH * this.cropCanvasWidth / this.cropCanvasHeight;
+                this.width = (int) (cropShapeWidth * this.proportion);
                 break;
         }
 
         final double left = this.proportion * cropLeft;
         final double top = this.proportion * cropTop;
-        this.embededImage.getElement().getStyle().setMarginLeft(-left, Unit.PX);
-        this.embededImage.getElement().getStyle().setMarginTop(-top, Unit.PX);
+        this.embeddedImage.getElement().getStyle().setMarginLeft(-left, Unit.PX);
+        this.embeddedImage.getElement().getStyle().setMarginTop(-top, Unit.PX);
 
-        this.embededImage.setSize(this.imageW + "px", this.imageH + "px");
+        this.embeddedImage.setSize(this.imageW + "px", this.imageH + "px");
 
         // change this widget size
         getElement().getStyle().setWidth(this.width, Unit.PX);
@@ -121,10 +143,6 @@ public class GWTCropperThumbImpl extends SimplePanel {
 
     private void setImageStyleProperty(){
         getElement().getStyle().setOverflow(Overflow.HIDDEN);
-        this.embededImage.getElement().getStyle().setProperty("maxWidth","none");
+        this.embeddedImage.getElement().getStyle().setProperty("maxWidth","none");
     }
-
-    public static native void log(String msg) /*-{
-        console.log(msg);
-    }-*/;
 }
