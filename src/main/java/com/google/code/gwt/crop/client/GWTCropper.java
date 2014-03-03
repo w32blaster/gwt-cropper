@@ -23,6 +23,8 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.uibinder.client.UiConstructor;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 
@@ -92,18 +94,23 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private GWTCropperPreview thumb;
 	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
-	
+
+	// used by UIBuinder
+	private final String imageURL;
+
 	/**
 	 * Constructor with mandatory parameter of image's URL.
 	 *
-	 * @param strImageURL - URL of an uncropped image
+	 * @param imageURL - URL of an uncropped image
 	 */
-	public GWTCropper(String strImageURL) {
+	@UiConstructor
+	public GWTCropper(String imageURL) {
 		super("");
+		this.imageURL = imageURL;
 
 		bundleResources.css().ensureInjected();
 		this._container = new AbsolutePanelImpl();
-		this.addCanvas(strImageURL);
+		this.addCanvas(imageURL);
 		
 		addDomHandler(this, MouseMoveEvent.getType());
 		addDomHandler(this, MouseUpEvent.getType());
@@ -112,6 +119,27 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		addDomHandler(this, TouchMoveEvent.getType());
 		addDomHandler(this, TouchEndEvent.getType());
 	}
+
+	/**
+	 * <p></p>Used by UiBinder to instantiate GWTCropper.</p>
+	 *
+	 * <p>The example usage:
+	 * <pre>
+	 *     <ui:UiBinder ...
+	 *     xmlns:my="urn:import:com.google.code.gwt.crop.client">
+	 *
+	 *     <g:HTMLPanel>
+	 *         <my:GWTCropper imageURL="my-image-url.jpg"/>
+	 *     </g:HTMLPanel>
+	 * </pre>
+	 * </p>
+	 *
+	 */
+	@UiFactory
+	GWTCropper makeCricketScores() {
+		return new GWTCropper(this.imageURL);
+	}
+
 
 	// ---------- Public API ------------------
 	
