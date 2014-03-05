@@ -412,7 +412,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 					onCavasLoadHandler.onLoad(event);
 				
 				if (null != previewWidget) {
-                    previewWidget.init(src, nOuterWidth, nOuterHeight);
+                    previewWidget.init(src, nOuterWidth, nOuterHeight, aspectRatio);
 				}
 
                 updatePreviewWidget();
