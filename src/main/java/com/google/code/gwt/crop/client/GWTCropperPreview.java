@@ -3,6 +3,7 @@ package com.google.code.gwt.crop.client;
 import com.google.code.gwt.crop.client.common.Dimension;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -61,6 +62,7 @@ public class GWTCropperPreview extends SimplePanel {
      *                  that will be remain constantly (Dimension.WIDTH or Dimension.HEIGHT)
      * @param value length of that side in px
      */
+    @UiConstructor
     public GWTCropperPreview(Dimension dimension, int value){
         this.fixedSide = dimension;
         this.fixedValue = value;

@@ -40,8 +40,18 @@ import com.google.gwt.user.client.ui.*;
  * crop.setAspectRatio(1); // square selection (optional)
  * panel.add(crop);
  * </pre>
+ * <br />
+ * Or, from UI XML document:
+ * <pre>
+ *     <ui:UiBinder ...
+ *     xmlns:my="urn:import:com.google.code.gwt.crop.client">
+ *
+ *     <g:HTMLPanel>
+ *         <my:GWTCropper imageURL="my-image-url.jpg" aspectRatio='1.5' />
+ *     </g:HTMLPanel>
+ * </pre>
  * </p>
- * 
+ *
  * 
  * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  * 
@@ -84,14 +94,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private LoadHandler onCavasLoadHandler;
 	
 	// settings
-	private float aspectRatio = 0;
+	private double aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
 	private int HANDLE_SIZE = this.bundleResources.css().handleSize();
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
-	private GWTCropperPreview thumb;
+	private GWTCropperPreview previewWidget;
 	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 
@@ -121,22 +131,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	}
 
 	/**
-	 * <p></p>Used by UiBinder to instantiate GWTCropper.</p>
-	 *
-	 * <p>The example usage:
-	 * <pre>
-	 *     <ui:UiBinder ...
-	 *     xmlns:my="urn:import:com.google.code.gwt.crop.client">
-	 *
-	 *     <g:HTMLPanel>
-	 *         <my:GWTCropper imageURL="my-image-url.jpg"/>
-	 *     </g:HTMLPanel>
-	 * </pre>
-	 * </p>
-	 *
+	 * <p></p>Used by UiBinder to instantiate GWTCropper</p>
 	 */
 	@UiFactory
-	GWTCropper makeCricketScores() {
+	GWTCropper createCropperInstanceFromUiBuilder() {
 		return new GWTCropper(this.imageURL);
 	}
 
@@ -164,16 +162,16 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * </p>
 	 * 
 	 * <p><i>Usage example:</i> You can declare a side proportion in this way: <br/>
-	 * <pre> cropper.setAspectRatio( (float) 1/2); </pre>
+	 * <pre> cropper.setAspectRatio( (double) 1/2); </pre>
 	 * </p>
 	 * 
-	 * @param aspectRatio - float value, proportion width/height
+	 * @param aspectRatio - double value, proportion width/height
 	 */
-	public void setAspectRatio(float aspectRatio) {
+	public void setAspectRatio(double aspectRatio) {
 		this.aspectRatio = aspectRatio;
 	}
 	
-	public float getAspectRatio() {
+	public double getAspectRatio() {
 		return this.aspectRatio;
 	}
 	
@@ -289,7 +287,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void setInitialSelection(int x, int y, int width, int height, boolean shouldKeepAspectRatio) {
 		
 		if (shouldKeepAspectRatio) 
-			this.setAspectRatio((float) width/height);
+			this.setAspectRatio(width/height);
 		
 		if (width > MIN_WIDTH) 
 			this.nInnerWidth = width;
@@ -368,10 +366,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	/**
 	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview GWTCropperThumbImpl} widget.
 	 * 
-	 * @param thumbnailWidget
+	 * @param previewWidget
 	 */
-    public void registerCropperThumb(GWTCropperPreview thumbnailWidget){
-        this.thumb = thumbnailWidget;
+    public void registerPreviewWidget(GWTCropperPreview previewWidget){
+        this.previewWidget = previewWidget;
     };
 	
 	// --------- private methods ------------
@@ -413,8 +411,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				if (null != onCavasLoadHandler) 
 					onCavasLoadHandler.onLoad(event);
 				
-				if (null != thumb) {
-					thumb.init(src, nOuterWidth, nOuterHeight);
+				if (null != previewWidget) {
+                    previewWidget.init(src, nOuterWidth, nOuterHeight);
 				}
 
                 updatePreviewWidget();
@@ -997,8 +995,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * Update preview widget if needed.
 	 */
 	private void updatePreviewWidget() {
-		if (thumb != null) {
-		    thumb.updatePreview(
+		if (previewWidget != null) {
+		    previewWidget.updatePreview(
 		    		this.getSelectionWidth(),
 		    		this.getSelectionHeight(), 
 		    		this.getSelectionXCoordinate(),
