@@ -27,14 +27,15 @@ public class GWTCropperPreview extends SimplePanel {
     private int cropCanvasHeight;
 
     // this widget dimensions
-    private int width;
-    private int height;
+    private int width = 0;
+    private int height = 0;
 
     private Image embeddedImage;
 
     private final Dimension fixedSide;
     private final int fixedValue;
     private double proportion;
+    private boolean isSquare = false;
 
     /**
      * <p>Initiates the preview widget, that shows only selected area (i.e. "cropping preview").</p>
@@ -90,12 +91,20 @@ public class GWTCropperPreview extends SimplePanel {
      * @param imageUrl - image URL for preview
      * @param canvasWidth
      * @param canvasHeight
+     * @param aspectRatio
      */
-    void init(String imageUrl, int canvasWidth, int canvasHeight) {
+    void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
         this.embeddedImage = new Image(imageUrl);
         
         this.cropCanvasWidth = canvasWidth;
         this.cropCanvasHeight = canvasHeight;
+        this.isSquare = (aspectRatio == 1);
+
+        if (this.isSquare) {
+            if (0 == this.width) this.width = this.height;
+            if (0 == this.height) this.height = this.width;
+        }
+
         this.setImageStyleProperty();
         add(embeddedImage);
     }
@@ -117,7 +126,9 @@ public class GWTCropperPreview extends SimplePanel {
 
                 this.imageW = (int) (this.cropCanvasWidth * this.proportion);
                 this.imageH = this.imageW * this.cropCanvasHeight / this.cropCanvasWidth;
-                this.height = (int) (cropShapeHeight * this.proportion);
+                if (!this.isSquare) {
+                    this.height = (int) (cropShapeHeight * this.proportion);
+                }
                 break;
 
             case HEIGHT:
@@ -125,7 +136,9 @@ public class GWTCropperPreview extends SimplePanel {
 
                 this.imageH = (int) (this.cropCanvasHeight * this.proportion);
                 this.imageW = this.imageH * this.cropCanvasWidth / this.cropCanvasHeight;
-                this.width = (int) (cropShapeWidth * this.proportion);
+                if (!this.isSquare) {
+                    this.width = (int) (cropShapeWidth * this.proportion);
+                }
                 break;
         }
 
