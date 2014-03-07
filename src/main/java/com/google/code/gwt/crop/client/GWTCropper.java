@@ -22,28 +22,11 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Touch;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
-import com.google.gwt.event.dom.client.TouchMoveEvent;
-import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.event.dom.client.TouchStartEvent;
-import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.uibinder.client.UiConstructor;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
 /**
  * 
@@ -57,8 +40,18 @@ import com.google.gwt.user.client.ui.Widget;
  * crop.setAspectRatio(1); // square selection (optional)
  * panel.add(crop);
  * </pre>
+ * <br />
+ * Or, from UI XML document:
+ * <pre>
+ *     <ui:UiBinder ...
+ *     xmlns:my="urn:import:com.google.code.gwt.crop.client">
+ *
+ *     <g:HTMLPanel>
+ *         <my:GWTCropper imageURL="my-image-url.jpg" aspectRatio='1.5' />
+ *     </g:HTMLPanel>
+ * </pre>
  * </p>
- * 
+ *
  * 
  * @author ilja.hamalainen@gmail.com (Ilja Hämäläinen)
  * 
@@ -101,26 +94,33 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private LoadHandler onCavasLoadHandler;
 	
 	// settings
-	private float aspectRatio = 0;
+	private double aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
 	private int HANDLE_SIZE = this.bundleResources.css().handleSize();
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
-	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
+	private GWTCropperPreview previewWidget;
 	
+	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
+
+	// used by UIBuinder
+	private final String imageURL;
+
 	/**
 	 * Constructor with mandatory parameter of image's URL.
 	 *
-	 * @param strImageURL - URL of an uncropped image
+	 * @param imageURL - URL of an uncropped image
 	 */
-	public GWTCropper(String strImageURL) {
+	@UiConstructor
+	public GWTCropper(String imageURL) {
 		super("");
-		
+		this.imageURL = imageURL;
+
 		bundleResources.css().ensureInjected();
 		this._container = new AbsolutePanelImpl();
-		this.addCanvas(strImageURL);
+		this.addCanvas(imageURL);
 		
 		addDomHandler(this, MouseMoveEvent.getType());
 		addDomHandler(this, MouseUpEvent.getType());
@@ -129,6 +129,15 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		addDomHandler(this, TouchMoveEvent.getType());
 		addDomHandler(this, TouchEndEvent.getType());
 	}
+
+	/**
+	 * <p></p>Used by UiBinder to instantiate GWTCropper</p>
+	 */
+	@UiFactory
+	GWTCropper createCropperInstanceFromUiBuilder() {
+		return new GWTCropper(this.imageURL);
+	}
+
 
 	// ---------- Public API ------------------
 	
@@ -153,16 +162,16 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * </p>
 	 * 
 	 * <p><i>Usage example:</i> You can declare a side proportion in this way: <br/>
-	 * <pre> cropper.setAspectRatio( (float) 1/2); </pre>
+	 * <pre> cropper.setAspectRatio( (double) 1/2); </pre>
 	 * </p>
 	 * 
-	 * @param acpectRatio - float value, proportion width/height
+	 * @param aspectRatio - double value, proportion width/height
 	 */
-	public void setAspectRatio(float acpectRatio) {
-		this.aspectRatio = acpectRatio;
+	public void setAspectRatio(double aspectRatio) {
+		this.aspectRatio = aspectRatio;
 	}
 	
-	public float getAspectRatio() {
+	public double getAspectRatio() {
 		return this.aspectRatio;
 	}
 	
@@ -278,7 +287,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	public void setInitialSelection(int x, int y, int width, int height, boolean shouldKeepAspectRatio) {
 		
 		if (shouldKeepAspectRatio) 
-			this.setAspectRatio((float) width/height);
+			this.setAspectRatio(width/height);
 		
 		if (width > MIN_WIDTH) 
 			this.nInnerWidth = width;
@@ -354,6 +363,15 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		super.setSize(width, height);
 	};
 	
+	/**
+	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview} widget.
+	 * 
+	 * @param previewWidget
+	 */
+    public void registerPreviewWidget(GWTCropperPreview previewWidget){
+        this.previewWidget = previewWidget;
+    };
+	
 	// --------- private methods ------------
 	
 	/**
@@ -370,6 +388,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		image.addLoadHandler(new LoadHandler() {
 
 			public void onLoad(LoadEvent event) {
+
+				//this is a bug in IE since v.8 - maxWidth collapse image 
+	            //and you cannot read its width - in some cases depends from CSS image extensions
+	            image.getElement().getStyle().setProperty("maxWidth","none");
+	            
 				// get original image size
 				if (nOuterWidth == -1) nOuterWidth = image.getWidth();
 				if (nOuterHeight == -1) nOuterHeight = image.getHeight();
@@ -387,6 +410,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				if (null != onCavasLoadHandler) 
 					onCavasLoadHandler.onLoad(event);
+				
+				if (null != previewWidget) {
+                    previewWidget.init(src, nOuterWidth, nOuterHeight, aspectRatio);
+				}
+
+                updatePreviewWidget();
 			}
 			
 		});
@@ -541,10 +570,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	
 	
 	/**
-	 * Append draggable selection background
-	 * 
-	 * @param sc - container of selection
-	 * @param hc - container of handles
+	 * Append draggable background for the selection area
 	 */
 	private HTML appendDraggableBackground() {
 		
@@ -960,6 +986,21 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 			
 			this.provideDragging(event.getRelativeX(this._container.getElement()), 
 					event.getRelativeY(this._container.getElement()));
+			
+	        this.updatePreviewWidget();
+		}
+	}
+
+	/**
+	 * Update preview widget if needed.
+	 */
+	private void updatePreviewWidget() {
+		if (previewWidget != null) {
+		    previewWidget.updatePreview(
+		    		this.getSelectionWidth(),
+		    		this.getSelectionHeight(), 
+		    		this.getSelectionXCoordinate(),
+		    		this.getSelectionYCoordinate());
 		}
 	}
 	
