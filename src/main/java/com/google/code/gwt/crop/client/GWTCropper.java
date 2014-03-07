@@ -364,7 +364,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	};
 	
 	/**
-	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview GWTCropperThumbImpl} widget.
+	 * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview} widget.
 	 * 
 	 * @param previewWidget
 	 */
