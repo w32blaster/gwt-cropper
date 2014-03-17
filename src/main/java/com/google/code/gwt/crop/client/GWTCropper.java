@@ -185,7 +185,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return X coordinate
 	 */
 	public int getSelectionXCoordinate() {
-		return this.nInnerX;
+		return (this.nInnerX + 1) /* selection border width */;
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return Y coordinate
 	 */
 	public int getSelectionYCoordinate() {
-		return this.nInnerY;
+		return (this.nInnerY + 1) /* selection border width */;
 	}
 	
 	/**
@@ -633,10 +633,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				this.nInnerY = cursorY - offsetY;
 				
 				// don't drag selection out of the canvas borders
-				if (this.nInnerX < 0) this.nInnerX = 0;
-				if (this.nInnerY < 0) this.nInnerY = 0;
-				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth) this.nInnerX = this.nOuterWidth - this.nInnerWidth;
-				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight) this.nInnerY = this.nOuterHeight - this.nInnerHeight;
+				if (this.nInnerX < -1) this.nInnerX = -1;
+				if (this.nInnerY < -1) this.nInnerY = -1;
+				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth + 1) this.nInnerX = this.nOuterWidth - this.nInnerWidth + 1;
+				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight + 1) this.nInnerY = this.nOuterHeight - this.nInnerHeight + 1;
 				
 				elH.getStyle().setLeft(this.nInnerX, Unit.PX);
 				elH.getStyle().setTop(this.nInnerY, Unit.PX);
