@@ -22,4 +22,11 @@ public interface CropperStyleResource extends CssResource {
      * @return handle size in pixels, int
      */
     int handleSize();
+
+    /**
+     * The border width for the selection. Default value is 1px.
+     *
+     * @return
+     */
+    int borderSize();
 }

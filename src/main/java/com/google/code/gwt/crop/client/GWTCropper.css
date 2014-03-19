@@ -2,6 +2,8 @@
 
 /* recommended to choose a value that is divisible by 2 */
 @def handleSize 10px;
+/* border width */
+@def borderSize 1px;
 
 .base {
 	background-color: #000;
@@ -11,7 +13,7 @@
 	opacity: 0.4;
 }
 .selection {
-	border: 1px dashed white;
+	border: borderSize dashed white;
 }
 .selectionDraggableBackground {
     background: rgba(255, 255, 255, 0);
