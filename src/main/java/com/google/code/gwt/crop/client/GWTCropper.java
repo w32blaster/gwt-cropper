@@ -91,13 +91,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private final AbsolutePanelImpl _container;
 	private AbsolutePanel handlesContainer;
 	private HTML draggableBackground;
-	private LoadHandler onCavasLoadHandler;
+	private LoadHandler onCanvasLoadHandler;
 	
 	// settings
 	private double aspectRatio = 0;
 	
 	// minimum size of height or width. Just to prevent selection area to be shrunk to a dot
-	private int HANDLE_SIZE = this.bundleResources.css().handleSize();
+	private final int HANDLE_SIZE = this.bundleResources.css().handleSize();
+    private final int SELECTION_BORDER_SIZE = this.bundleResources.css().borderSize();
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
@@ -185,7 +186,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return X coordinate
 	 */
 	public int getSelectionXCoordinate() {
-		return (this.nInnerX + 1) /* selection border width */;
+		return (this.nInnerX + this.SELECTION_BORDER_SIZE);
 	}
 	
 	/**
@@ -198,7 +199,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return Y coordinate
 	 */
 	public int getSelectionYCoordinate() {
-		return (this.nInnerY + 1) /* selection border width */;
+		return (this.nInnerY + this.SELECTION_BORDER_SIZE);
 	}
 	
 	/**
@@ -328,7 +329,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @param handler
 	 */
 	public void addCanvasLoadHandler(LoadHandler handler) {
-		this.onCavasLoadHandler = handler;
+		this.onCanvasLoadHandler = handler;
 	}
 	
 	/**
@@ -408,8 +409,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				
 				setSize(nOuterWidth, nOuterHeight);
 				
-				if (null != onCavasLoadHandler) 
-					onCavasLoadHandler.onLoad(event);
+				if (null != onCanvasLoadHandler)
+					onCanvasLoadHandler.onLoad(event);
 				
 				if (null != previewWidget) {
                     previewWidget.init(src, nOuterWidth, nOuterHeight, aspectRatio);
@@ -430,7 +431,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private void addSelection(final String src) {
 		
 		selectionContainer.addStyleName(this.bundleResources.css().selection());
-		
+
 		this.validateInitialData();
 
 		selectionContainer.setWidth(this.nInnerWidth + "px");
@@ -633,10 +634,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				this.nInnerY = cursorY - offsetY;
 				
 				// don't drag selection out of the canvas borders
-				if (this.nInnerX < -1) this.nInnerX = -1;
-				if (this.nInnerY < -1) this.nInnerY = -1;
-				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth + 1) this.nInnerX = this.nOuterWidth - this.nInnerWidth + 1;
-				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight + 1) this.nInnerY = this.nOuterHeight - this.nInnerHeight + 1;
+				if (this.nInnerX < -SELECTION_BORDER_SIZE) this.nInnerX = -SELECTION_BORDER_SIZE;
+				if (this.nInnerY < -SELECTION_BORDER_SIZE) this.nInnerY = -SELECTION_BORDER_SIZE;
+				if (this.nInnerX + this.nInnerWidth > this.nOuterWidth + SELECTION_BORDER_SIZE) this.nInnerX = this.nOuterWidth - this.nInnerWidth + SELECTION_BORDER_SIZE;
+				if (this.nInnerY + this.nInnerHeight > this.nOuterHeight + SELECTION_BORDER_SIZE) this.nInnerY = this.nOuterHeight - this.nInnerHeight + SELECTION_BORDER_SIZE;
 				
 				elH.getStyle().setLeft(this.nInnerX, Unit.PX);
 				elH.getStyle().setTop(this.nInnerY, Unit.PX);
@@ -646,8 +647,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 				elS.getStyle().setTop(this.nInnerY, Unit.PX);
 				
 				elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-				elImg.getStyle().setLeft(-this.nInnerX - 1, Unit.PX);
-				elImg.getStyle().setTop(-this.nInnerY - 1, Unit.PX);
+				elImg.getStyle().setLeft(-this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
+				elImg.getStyle().setTop(-this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
 				break;
 				
 				
