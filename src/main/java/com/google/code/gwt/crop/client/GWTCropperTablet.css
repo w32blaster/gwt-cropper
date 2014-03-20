@@ -2,6 +2,8 @@
 
 /* recommended to choose a value that is divisible by 2 */
 @def handleSize 30px;
+    /* border width */
+@def borderSize 1px;
 
 .base {
 	background-color: #000;
