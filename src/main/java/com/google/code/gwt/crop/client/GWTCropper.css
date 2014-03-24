@@ -1,0 +1,39 @@
+@CHARSET "UTF-8";
+
+/* recommended to choose a value that is divisible by 2 */
+@def handleSize 10px;
+/* border width */
+@def borderSize 1px;
+
+.base {
+	background-color: #000;
+	position: relative;
+}
+.imageCanvas {
+	opacity: 0.4;
+}
+.selection {
+	border: borderSize dashed white;
+}
+.selectionDraggableBackground {
+    background: rgba(255, 255, 255, 0);
+}
+.handlesContainer {
+	overflow: visible;
+}
+.handle {
+	width: handleSize;
+	height: handleSize;
+	border: 1px solid white;
+	background: rgba(255, 255, 255, 0.25);
+	position: absolute;
+}
+
+.base DIV {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
