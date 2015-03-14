@@ -1,0 +1,65 @@
+#summary Instructions how to use the GWT Cropper plugin
+#labels Featured,Phase-Implementation
+
+= Introduction =
+
+The plugin is pretty simple and it has only necessary functionality.
+
+
+= Details =
+
+You can create an instance of the plugin in this way:
+{{{
+   final GWTCropper cropper = new GWTCropper("path/to/your/uncropped/image.jpg");
+   panel.add(cropper);
+}}}
+
+==Set the aspect ratio==
+
+*public void setAspectRatio(float acpectRatio)*
+
+Sets the aspect ratio (proportion of width to height) for the selection.
+
+Examples:
+
+    * default is 0, it means, that the selection can have any shape.
+    * ratio is 1/1=1, then the selection will be square.
+    * ratio 2/1=2, then the selection will be rectangular where width is twice longer than height
+    * ratio 1/2=0.5, then the selection will be rectangular where height is twice higher than width
+
+_Usage example: You can declare a side proportion in this way:_
+{{{
+ cropper.setAspectRatio( (float) 1/2); 
+}}}
+
+= Initialize widget using UiBuilder =
+_(since v. 0.5.0)_
+
+You can initialize the GWT-Cropper either in Java code or in XML view as well. To add the widget to a _.ui.xml_ file, please use this code example:
+
+{{{
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+     xmlns:g='urn:import:com.google.gwt.user.client.ui'
+     xmlns:my="urn:import:com.google.code.gwt.crop.client">
+
+     <my:GWTCropper  ui:field="cropper" aspectRatio="1.5" imageURL="url/to/your/uncropped/image.jpg" />
+}}}
+
+Please notice, that the _imageUrl_ is mandatory parameter, but the _aspectRatio_ is optional (default value is 0, that means that a selection might have any shape).
+
+==How to harvest selection coordinates==
+
+When you are done, you can retrieve the result coordinates of the selection. Let's say, you placed a button "Crop" near the cropper and you assigned the click handler on it. Then, inside this handler you can use next methods to yield actual information about selection:
+
+    * cropper.getSelectionXCoordinate()
+    * cropper.getSelectionYCoordinate()
+    * cropper.getSelectionWidth() 
+    * cropper.getSelectionHeight() 
+
+To understand the public API methods, please refer to the diagram below:
+
+<img src="http://wiki.gwt-cropper.googlecode.com/hg/gwt-cropper-diagramm.gif" alt="GWT Cropper diagram how (gwt, crop, image)" width="827" height="487" />
+
+_Take a look at the [http://wiki.gwt-cropper.googlecode.com/hg/demo/Application.html DEMO]
+
+<wiki:gadget url="http://www.ohloh.net/p/616842/widgets/project_users.xml" height="125" border="0"/>
