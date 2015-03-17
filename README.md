@@ -1,5 +1,8 @@
 <img src="http://w32blaster.github.io/gwt-cropper/images/wiki/gwt-cropper.png" width="280" height="105" alt="GWT Cropper logo" title="GWT Cropper logo" />
 
+* **Official website**: http://gwt-cropper.co.uk/
+* **Wiki**: http://gwt-cropper.co.uk/Usage
+
 *GWT Cropper* is a widget for [Google Web Toolkit](http://www.gwtproject.org/), that allows you to select an area of a picture and get the coordinates of this selection. It is useful, if you want to crop a picture on the server side.
 
 # Demo
