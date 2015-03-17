@@ -1,0 +1,15 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Ilja Hämäläinen -- Developer -- w32blaster
+
+# THANKS
+
+    Dawid Dziewulski -- creation of the Preview widget
+
+# TECHNOLOGY COLOPHON
+
+    CSS3, HTML5, GWT
+    Apache Server Configs, jQuery, Modernizr, Normalize.css

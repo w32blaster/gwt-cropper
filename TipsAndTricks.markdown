@@ -2,70 +2,69 @@
 layout: default
 title: Wiki GWT-Cropper
 header: GWT-Cropper
-description: How to use the Preview widget with GWT-Cropper
+description: All the common issues and ways of solving.
 ---
 
-#summary All the common issues and ways of solving.
-#labels Featured,Phase-Design
+{% include SideBar.html %}
 
-<wiki:toc />
+#Introduction
 
-= Introduction =
 In this chapter we are going to collect all common issues and problems and all the ways how to solve it. If you have any problem and you know how to fix it, then please make a note at comments.
 
-=Drag the background (rubber band)=
+#Drag the background (rubber band)
+
 *When I browse my application on a tablet, I try to drag the selection, but instead of this I drag the whole application background.*
 
 It usually looks like this:
 
-<img src="http://wiki.gwt-cropper.googlecode.com/hg/gwt-moving-background.jpg" alt="Drag the whole application instead of only selection" width="650" height="433" />
+![Drag the whole application instead of only selection](/images/wiki/gwt-moving-background.jpg)
 
 You can see, how I move the selection up, but the white background is moving instead. We even can see the native browser's grey background at the bottom.
 
 The simplest way to solve it is to prevent native touch events. The classical code snippet is here:
 
-{{{
-<script type="text/javascript" language="javascript">
+```
    function stopScrolling( touchEvent ) { touchEvent.preventDefault(); }
 
    if (document.addEventListener) {
       document.addEventListener('touchmove', stopScrolling, false);
    } else if (document.attachEvent) {
       document.attachEvent('touchmove', stopScrolling);
-   }		
-</script>
-}}}
+   }
+```
 
 Put this code to your HTML or JSP host page. This code works in all browsers, even in IE.
 
-You also could improve this function, if it conflicts with native scrolling areas. Please refer to [http://stackoverflow.com/questions/10357844/how-to-disable-rubber-band-in-ios-web-apps this] discussion.
+You also could improve this function, if it conflicts with native scrolling areas. Please refer to [this](http://stackoverflow.com/questions/10357844/how-to-disable-rubber-band-in-ios-web-apps) discussion.
 
-=Detect tablet/mobile device in compile time=
-*GWT Cropper* uses module [https://code.google.com/p/gwt-cropper/source/browse/src/main/java/com/google/code/gwt/crop/FormFactor.gwt.xml FormFactor] to detect tablets. Do you want to re-use it in your code? No problem, this module will be available for you, while you use GWT Cropper. 
+#Detect tablet/mobile device in compile time
+
+*GWT Cropper* uses module [FormFactor](https://github.com/w32blaster/gwt-cropper/blob/master/src/main/java/com/google/code/gwt/crop/FormFactor.gwt.xml) to detect tablets. Do you want to re-use it in your code? No problem, this module will be available for you, while you use GWT Cropper. 
 
 Let's consider a simple example. Say, you need to implement three different widgets for PC, tablets and mobile devices. And you want to generate different sources for that using [https://developers.google.com/web-toolkit/doc/latest/DevGuideCodingBasicsDeferred deferred binding]. 
 
-<img src="http://wiki.gwt-cropper.googlecode.com/hg/screenshot-desktop.jpeg" width="593" height="311" alt="Screenshot of the browser on PC" title="Screenshot of the browser on the PC showing the widget from this tutorial" />
+![Screenshot of the browser on the PC showing the widget from this tutorial](/images/wiki/screenshot-desktop.jpeg)
 
-<img src="http://wiki.gwt-cropper.googlecode.com/hg/screenshot-nokia-n9.jpg" width="302" height="271" alt="Screenshot of the Nokia N9" title="Screeshot of smartphone (Nokia N9) demonstrating the widget from this tutorial." />
+![Screeshot of smartphone (Nokia N9) demonstrating the widget from this tutorial.](/images/wiki/screenshot-nokia-n9.jpg)
 
-<img src="http://wiki.gwt-cropper.googlecode.com/hg/screenshot-ipad.jpg" width="500" height="308" alt="Screenshot of the iPad" title="Screeshot of the tablet iPad demonstrating the widget from this tutorial." />
-
+![Screeshot of the tablet iPad demonstrating the widget from this tutorial.](/images/wiki/screenshot-ipad.jpg)
 
 Then you should create these three widgets (basic for desktops and two others expanding it).
 
 *BasicWidget.java*
-{{{
+
+```
 public class BasicWidget {
 
 	public Widget build() {
 		return new Button("Desktop specific widget (button)");
 	}
 }
-}}}
+```
 
 *TabletWidget.java*
-{{{
+
+```
 public class TabletWidget extends BasicWidget {
 
 	@Override
@@ -74,10 +73,11 @@ public class TabletWidget extends BasicWidget {
 	}
 
 }
-}}}
+```
 
 *MobileWidget.java*
-{{{
+
+```
 public class MobileWidget extends BasicWidget {
 
 	@Override
@@ -86,10 +86,11 @@ public class MobileWidget extends BasicWidget {
 	}
 
 }
-}}}
+```
 
 Then, inehrit FormFactor and declare deffered binding in your *.gwt.xml* file:
-{{{
+
+```
 	<!-- Inherit FormFactor module from GWT-Cropper library -->
 	<inherits name='com.google.code.gwt.crop.FormFactor'/>
 	
@@ -109,11 +110,11 @@ Then, inehrit FormFactor and declare deffered binding in your *.gwt.xml* file:
 		<when-type-is class="com.google.code.gwt.cropper.demo.client.factor.BasicWidget" />
 		<when-property-is name="formfactor" value="mobile" />
 	</replace-with>
-}}}
+```
 
 Finally, use it in your code. Create widget using _GWT.create()_ method and GWT will replace for you this widget to appropriate implementation during the compilation time.
 
-{{{
+```
 public class Application implements EntryPoint {
 
 	private static final BasicWidget widget = GWT.create(BasicWidget.class);
@@ -137,4 +138,4 @@ public class Application implements EntryPoint {
 	}
 
 }
-}}}
+```

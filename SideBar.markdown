@@ -1,6 +1,0 @@
- * [Usage Usage]
- * [TipsAndTricks Tips and tricks]
-   * [TipsAndTricks#Drag_the_background Drag the background]
-   * [TipsAndTricks#Detect_tablet/mobile_device_in_compile_time Detect tablet/mobile device in compile time]
- * [Styling]
- * [HowToUsePreviewWidget How to use Preview widget]
