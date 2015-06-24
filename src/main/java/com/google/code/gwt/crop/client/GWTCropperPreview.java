@@ -17,7 +17,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @since 0.5.0
  * @version %I%, %G%
  */
-public class GWTCropperPreview extends SimplePanel {
+public class GWTCropperPreview extends SimplePanel implements IGWTCropperPreview {
 
     /**Because crop image can be scaled. We have to remember its width and height
      * to future recounting */
@@ -93,7 +93,7 @@ public class GWTCropperPreview extends SimplePanel {
      * @param canvasHeight
      * @param aspectRatio
      */
-    void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
+    public void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
         this.embeddedImage = new Image(imageUrl);
         
         this.cropCanvasWidth = canvasWidth;
@@ -118,7 +118,7 @@ public class GWTCropperPreview extends SimplePanel {
      * @param cropLeft
      * @param cropTop
      */
-    void updatePreview(int cropShapeWidth, int cropShapeHeight, int cropLeft, int cropTop) {
+    public void updatePreview(int cropShapeWidth, int cropShapeHeight, int cropLeft, int cropTop) {
 
         switch (this.fixedSide) {
             case WIDTH:
