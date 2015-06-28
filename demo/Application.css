@@ -1,0 +1,86 @@
+/** Add css rules here for your application. */
+body {
+	background: url("px_by_Gre3g.png") 0 0 !important;
+	margin: 0;
+	width:100%;
+}
+
+button {
+  display: block;
+  font-size: 16pt;
+}
+
+.widePanel {
+  width: 100%
+}
+
+.header-version-label {
+	color: #A6A6A6;
+    text-align: center;
+}
+.demo-container {
+	margin-left: auto;
+	margin-right: auto;
+	position: relative !important;
+}
+
+.demo-panel {
+	position: relative;
+	
+	width: 500px;
+	height: 398px;
+	
+	border: 1px solid #CCC;
+	padding: 10px;
+
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	
+	-moz-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.25);
+	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.25);
+	
+	background-color: #EFEFEF;
+}
+
+.source-code-container .gwt-Label {
+	margin: 10px 0;
+	font-size: 2em;
+}
+
+PRE {
+	padding: 30px;
+	background: #FCF9EC;
+	border: 1px dashed #cecece;
+}
+
+.dialogContent {
+	padding: 10px;	
+}
+
+.gwt-PopupPanel {
+	z-index: 100;
+}
+.gwt-DialogBox {
+	z-index: 100;
+}
+.gwt-PopupPanelGlass {
+	z-index: 90;
+}
+
+label {
+	color: #333;
+}
+input[type="radio"]:checked+label{ 
+	font-weight: bold;
+	color: #111;
+} 
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+	body {
+	    overflow: hidden;
+	  }
+}
