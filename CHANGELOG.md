@@ -1,5 +1,6 @@
 # Changelog
 
+ * *0.5.2* New [Constrained Cropper Preview](https://github.com/w32blaster/gwt-cropper/blob/master/src/main/java/com/google/code/gwt/crop/client/GWTConstrainedCropperPreview.java) widget [was added](https://github.com/w32blaster/gwt-cropper/pull/22). Thanks to @thoepfner 
  * *0.5.1* The harvesting of the selection position [is calibrated](http://code.google.com/p/gwt-cropper/issues/detail?id=18).
  * *0.5.0* The new [Preview widget](http://wiki.gwt-cropper.googlecode.com/hg/apidocs/com/google/code/gwt/crop/client/GWTCropperPreview.html) is added ([issue16](http://code.google.com/p/gwt-cropper/issues/detail?id=16)). Now you can declare GWT Cropper in ui.xml files with UiBuilder ([issue17](http://code.google.com/p/gwt-cropper/issues/detail?id=17)). Created new Wiki page [HowToUsePreviewWidget How to use Preview widget].
  * *0.4.6* The cropper is adjusted for using with [GWT-Bootstrap](http://gwtbootstrap.github.io) project ([issue14](http://code.google.com/p/gwt-cropper/issues/detail?id=14)); bug fixes ([issue11](http://code.google.com/p/gwt-cropper/issues/detail?id=11), [issue12](http://code.google.com/p/gwt-cropper/issues/detail?id=12))

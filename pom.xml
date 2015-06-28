@@ -8,11 +8,11 @@
 	<version>0.5.2-SNAPSHOT</version>
 	<name>GWT Cropper</name>
 	<description>GWT plugin for image cropping</description>
-	<url>http://code.google.com/p/gwt-cropper/</url>
+	<url>http://gwt-cropper.co.uk/</url>
 
 	<issueManagement>
-		<system>Google Code Issue Tracking</system>
-		<url>http://code.google.com/p/gwt-cropper/issues/list</url>
+		<system>GitHub Issue Tracking</system>
+		<url>https://github.com/w32blaster/gwt-cropper/issues</url>
 	</issueManagement>
 
 	<developers>
@@ -25,6 +25,18 @@
 		</developer>
 	</developers>
 
+    <contributors>
+        <contributor>
+            <name>Timo Höpfner</name>
+            <url>https://github.com/thoepfner</url>
+            <organizationUrl>https://github.com/projectwonder</organizationUrl>
+        </contributor>
+
+        <contributor>
+            <name>Dawid Dziewulski</name>
+        </contributor>
+    </contributors>
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -34,9 +46,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:hg:https://code.google.com/p/gwt-cropper/</connection>
-		<developerConnection>scm:hg:https://code.google.com/p/gwt-cropper/</developerConnection>
-		<url>https://code.google.com/p/gwt-cropper/source/browse/</url>
+		<connection>scm:git:git@github.com:w32blaster/gwt-cropper.git</connection>
+		<developerConnection>scm:git:git@github.com:w32blaster/gwt-cropper.git</developerConnection>
+		<url>https://github.com/w32blaster/gwt-cropper/commits/master</url>
 	</scm>
 
 	<parent>
@@ -46,7 +58,8 @@
 	</parent>
 
 	<properties>
-		<gwtVersion>2.4.0</gwtVersion>
+		<gwtVersion>2.5.0</gwtVersion>
+		<java.version>1.7</java.version>
 	</properties>
 
 	<dependencies>
@@ -117,7 +130,17 @@
 						<docfilessubdirs>true</docfilessubdirs>
 				</configuration>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+
+
 		</plugins>
 
 	</build>
