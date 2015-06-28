@@ -102,7 +102,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	private int MIN_WIDTH = this.HANDLE_SIZE;
 	private int MIN_HEIGHT = this.HANDLE_SIZE;
 	
-	private GWTCropperPreview previewWidget;
+	private IGWTCropperPreview previewWidget;
 	
 	private AbsolutePanelImpl selectionContainer = new AbsolutePanelImpl();
 
@@ -369,7 +369,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * 
 	 * @param previewWidget
 	 */
-    public void registerPreviewWidget(GWTCropperPreview previewWidget){
+    public void registerPreviewWidget(IGWTCropperPreview previewWidget){
         this.previewWidget = previewWidget;
     };
 	
