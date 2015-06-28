@@ -8,8 +8,8 @@
 # Demo
 
 Try the working demo:
- * Simple cropper: [demo](http://wiki.gwt-cropper.googlecode.com/hg/demo/Application.html)
- * Cropper with preview: [demo](http://wiki.gwt-cropper.googlecode.com/hg/demo/Application2.html)
+ * Simple cropper: [demo](http://gwt-cropper.co.uk/demo/Application.html)
+ * Cropper with preview: [demo](http://gwt-cropper.co.uk/demo/Application2.html)
 
 <img src="http://w32blaster.github.io/gwt-cropper/images/wiki/gwt-cropper-1.jpg" width="669" height="530" alt="Gwt Cropper plugin to crop an image" />
 
