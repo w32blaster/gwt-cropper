@@ -2,6 +2,7 @@
 layout: main
 title: GWT-Cropper is a plugin for GWT
 header: GWT-Cropper
+version: 0.5.2
 description: GWT-Cropper is a widget for GWT, that allows you to select an area of a picture and get the coordinates of this selection.
 ---
 
@@ -30,7 +31,7 @@ If you use [Maven](http://maven.apache.org/), you can add this dependency to you
       <dependency>
             <groupId>com.googlecode.gwt-cropper</groupId>
             <artifactId>gwt-crop</artifactId>
-            <version>0.5.1</version>
+            <version>0.5.2</version>
       </dependency>
 ```
 
@@ -55,7 +56,7 @@ Add *GWT Cropper* to any panel in your code. Simple example (on Java):
 	  panel.add(crop);
 ```
 
-Or sample code in _.ui.xml_ (since [v. 0.5.0](http://code.google.com/p/gwt-cropper/issues/detail?id=17)):
+Or sample code in _.ui.xml_ (since [v. 0.5.0](https://github.com/w32blaster/gwt-cropper/issues/17)):
 
 ```XML
 	  <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
@@ -73,6 +74,6 @@ Or sample code in _.ui.xml_ (since [v. 0.5.0](http://code.google.com/p/gwt-cropp
 <img src="http://w32blaster.github.io/gwt-cropper/images/wiki/gwt-cropper-magnifier.jpg" width="650" height="480" alt="Gwt Cropper plugin to crop an image, works also on tablets" />
 
 # Documentation
-The documentation is pretty short, but in any case, please, refer to [Wiki-page](http://code.google.com/p/gwt-cropper/wiki/Usage) or [JavaDoc](http://wiki.gwt-cropper.googlecode.com/hg/apidocs/index.html) for details. 
+The documentation is pretty short, but in any case, please, refer to [Wiki-page](https://github.com/w32blaster/gwt-cropper/wiki/Usage) or [JavaDoc](apidocs/index.html) for details. 
 
 Take a look at the **TipsAndTricks Tips & tricks page** to see the most common issues.
