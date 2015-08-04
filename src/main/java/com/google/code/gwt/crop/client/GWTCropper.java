@@ -108,7 +108,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
 	// used by UIBuinder
 	private final String imageURL;
-	private double proportion;
+	private double imageAspectRatio;
+	private double proportion = 1;
 
 	/**
 	 * Constructor with mandatory parameter of image's URL.
@@ -187,7 +188,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return X coordinate
 	 */
 	public int getSelectionXCoordinate() {
-		return (this.nInnerX + this.SELECTION_BORDER_SIZE);
+		return (int) ((this.nInnerX + this.SELECTION_BORDER_SIZE) * proportion);
 	}
 	
 	/**
@@ -200,7 +201,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return Y coordinate
 	 */
 	public int getSelectionYCoordinate() {
-		return (this.nInnerY + this.SELECTION_BORDER_SIZE);
+		return (int) ((this.nInnerY + this.SELECTION_BORDER_SIZE) * proportion);
 	}
 	
 	/**
@@ -213,7 +214,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return width in pixels
 	 */
 	public int getSelectionWidth() {
-		return this.nInnerWidth;
+		return (int) (this.nInnerWidth * proportion);
 	}
 	
 	/**
@@ -225,7 +226,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 * @return height in pixels
 	 */
 	public int getSelectionHeight() {
-		return this.nInnerHeight;
+		return (int) (this.nInnerHeight * proportion);
 	}
 	
 	/**
@@ -422,13 +423,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	            
 				// get original image size
 				if (nOuterWidth != -1 || nOuterHeight != -1) {
-					proportion = (double) image.getWidth()/image.getHeight();
-					if (nOuterWidth == -1) nOuterWidth = (int) (nOuterHeight*proportion);
-					if (nOuterHeight == -1) nOuterHeight = (int) (nOuterWidth/proportion);
+					imageAspectRatio = (double) image.getWidth()/image.getHeight();
+					if (nOuterWidth == -1) nOuterWidth = (int) (nOuterHeight * imageAspectRatio);
+					if (nOuterHeight == -1) nOuterHeight = (int) (nOuterWidth / imageAspectRatio);
 				} else {
 					nOuterWidth = image.getWidth();
 					nOuterHeight = image.getHeight();
 				}
+				proportion = (double) image.getWidth() / nOuterWidth;
 				
 				DOM.setElementProperty(image.getElement(), "width", nOuterWidth + "");
 				DOM.setElementProperty(image.getElement(), "height", nOuterHeight + "");
@@ -1029,11 +1031,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	 */
 	private void updatePreviewWidget() {
 		if (previewWidget != null) {
-		    previewWidget.updatePreview(
-		    		this.getSelectionWidth(),
-		    		this.getSelectionHeight(), 
-		    		this.getSelectionXCoordinate(),
-		    		this.getSelectionYCoordinate());
+			previewWidget.updatePreview(
+					(int) (this.getSelectionWidth() / proportion),
+					(int) (this.getSelectionHeight() / proportion),
+					(int) (this.getSelectionXCoordinate() / proportion),
+					(int) (this.getSelectionYCoordinate() / proportion));
 		}
 	}
 	
