@@ -108,6 +108,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
 	// used by UIBuinder
 	private final String imageURL;
+	private double proportion;
 
 	/**
 	 * Constructor with mandatory parameter of image's URL.
@@ -347,7 +348,32 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 		this.nOuterHeight = height;
 	};
 	
-	
+	/**
+	 * Sets the cropper's width, height will computed with keeping image aspect ratio.
+	 *
+	 * @param width integer in px
+	 */
+	public void setWidth(int width) {
+		super.setWidth(width+"px");
+		nOuterWidth = width;
+	}
+
+	/**
+	 * <i><b>Deprecated.</b> This method sets the width only for parent element, but not for the whole widget.
+	 * Use method {@link com.google.code.gwt.crop.client.GWTCropper#setWidth(int)} instead.</i>
+	 *
+	 * <p />
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see com.google.gwt.user.client.ui.UIObject#setWidth(String)
+	 */
+	@Override
+	@Deprecated
+	public void setWidth(String width) {
+		super.setWidth(width);
+	}
+
 	/**
 	 * <i><b>Deprecated.</b> This method sets the size only for parent element, but not for the whole widget.
 	 * Use method {@link com.google.code.gwt.crop.client.GWTCropper#setSize(int, int) setSize(int width, int height)} instead.</i>
@@ -395,8 +421,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 	            image.getElement().getStyle().setProperty("maxWidth","none");
 	            
 				// get original image size
-				if (nOuterWidth == -1) nOuterWidth = image.getWidth();
-				if (nOuterHeight == -1) nOuterHeight = image.getHeight();
+				if (nOuterWidth != -1 || nOuterHeight != -1) {
+					proportion = (double) image.getWidth()/image.getHeight();
+					if (nOuterWidth == -1) nOuterWidth = (int) (nOuterHeight*proportion);
+					if (nOuterHeight == -1) nOuterHeight = (int) (nOuterWidth/proportion);
+				} else {
+					nOuterWidth = image.getWidth();
+					nOuterHeight = image.getHeight();
+				}
 				
 				DOM.setElementProperty(image.getElement(), "width", nOuterWidth + "");
 				DOM.setElementProperty(image.getElement(), "height", nOuterHeight + "");
