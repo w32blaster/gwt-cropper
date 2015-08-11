@@ -10,6 +10,12 @@
     <description>GWT plugin for image cropping</description>
     <url>http://gwt-cropper.co.uk/</url>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
     <issueManagement>
         <system>GitHub Issue Tracking</system>
         <url>https://github.com/w32blaster/gwt-cropper/issues</url>
@@ -26,7 +32,6 @@
     </developers>
 
     <contributors>
-
 
         <contributor>
             <name>Timo Höpfner</name>
@@ -58,12 +63,6 @@
         <developerConnection>scm:git:git@github.com:w32blaster/gwt-cropper.git</developerConnection>
         <url>https://github.com/w32blaster/gwt-cropper/commits/master</url>
     </scm>
-
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
 
     <properties>
         <gwtVersion>2.5.0</gwtVersion>
@@ -143,9 +142,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
