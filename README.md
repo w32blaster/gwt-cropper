@@ -73,6 +73,8 @@ Take a look at the **TipsAndTricks Tips & tricks page** to see the most common i
 
 # Changelog
 
+ * *0.5.3* Now you can scale whole cropper widget and the selection will be functioning accordingly [Pull request 23](https://github.com/w32blaster/gwt-cropper/pull/23). Thanks @enginer!
+ * *0.5.2* New [Constrained Cropper Preview](https://github.com/w32blaster/gwt-cropper/blob/master/src/main/java/com/google/code/gwt/crop/client/GWTConstrainedCropperPreview.java) widget [was added](https://github.com/w32blaster/gwt-cropper/pull/22). Thanks to @thoepfner 
  * *0.5.1* The harvesting of the selection position [is calibrated](https://github.com/w32blaster/gwt-cropper/issues/18).
  * *0.5.0* The new [Preview widget](http://wiki.gwt-cropper.googlecode.com/hg/apidocs/com/google/code/gwt/crop/client/GWTCropperPreview.html) is added ([issue16](https://github.com/w32blaster/gwt-cropper/issues/16)). Now you can declare GWT Cropper in ui.xml files with UiBuilder ([issue17](https://github.com/w32blaster/gwt-cropper/issues/17)). Created new Wiki page [HowToUsePreviewWidget How to use Preview widget].
  * *0.4.6* The cropper is adjusted for using with [GWT-Bootstrap](http://gwtbootstrap.github.io) project ([issue14](https://github.com/w32blaster/gwt-cropper/issues/14)); bug fixes ([issue11](https://github.com/w32blaster/gwt-cropper/issues/11), [issue12](https://github.com/w32blaster/gwt-cropper/issues/12))

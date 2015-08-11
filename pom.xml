@@ -26,6 +26,8 @@
 	</developers>
 
     <contributors>
+
+
         <contributor>
             <name>Timo Höpfner</name>
             <url>https://github.com/thoepfner</url>
@@ -35,6 +37,12 @@
         <contributor>
             <name>Dawid Dziewulski</name>
         </contributor>
+
+		<contributor>
+			<name>enginer</name>
+			<url>https://github.com/enginer</url>
+		</contributor>
+
     </contributors>
 
 	<licenses>
