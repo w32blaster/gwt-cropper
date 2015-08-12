@@ -2,7 +2,7 @@
 layout: main
 title: GWT-Cropper is a plugin for GWT
 header: GWT-Cropper
-version: 0.5.2
+version: 0.5.3.1
 description: GWT-Cropper is a widget for GWT, that allows you to select an area of a picture and get the coordinates of this selection.
 ---
 
@@ -31,7 +31,7 @@ If you use [Maven](http://maven.apache.org/), you can add this dependency to you
       <dependency>
             <groupId>com.googlecode.gwt-cropper</groupId>
             <artifactId>gwt-crop</artifactId>
-            <version>0.5.2</version>
+            <version>{{ page.version }}</version>
       </dependency>
 ```
 
