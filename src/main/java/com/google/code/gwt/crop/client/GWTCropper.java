@@ -486,8 +486,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
             imgSelectionBg.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
         }
 
-        selectionContainer.add(imgSelectionBg, -this.nInnerX - 1,  -this.nInnerY - 1);
-        this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
+        selectionContainer.add(imgSelectionBg, -this.nInnerX,  -this.nInnerY);
+        this._container.add(selectionContainer, this.nInnerX - SELECTION_BORDER_SIZE, this.nInnerY - SELECTION_BORDER_SIZE);
 
         this.buildSelectionArea();
 
@@ -680,12 +680,12 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
                 elH.getStyle().setTop(this.nInnerY, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(this.nInnerX, Unit.PX);
-                elS.getStyle().setTop(this.nInnerY, Unit.PX);
+                elS.getStyle().setLeft(this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
+                elS.getStyle().setTop(this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
-                elImg.getStyle().setTop(-this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
+                elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+                elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
                 break;
 
 
@@ -752,14 +752,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(this.nInnerX, Unit.PX);
-                elS.getStyle().setTop(this.nInnerY, Unit.PX);
+                elS.getStyle().setLeft(this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
+                elS.getStyle().setTop(this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-this.nInnerX - 1, Unit.PX);
-                elImg.getStyle().setTop(-this.nInnerY - 1, Unit.PX);
+                elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+                elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
 
                 Element el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
@@ -824,17 +824,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
                 elH = this.handlesContainer.getElement();
 
-                elH.getStyle().setTop(cursorY, Unit.PX);
+                elH.getStyle().setTop(nInnerY, Unit.PX);
                 elH.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setTop(cursorY, Unit.PX);
+                elS.getStyle().setTop(nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setTop(-cursorY - 1, Unit.PX);
+                elImg.getStyle().setTop(-nInnerY, Unit.PX);
 
                 el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
@@ -900,17 +900,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
                 elH = this.handlesContainer.getElement();
 
-                elH.getStyle().setLeft(cursorX, Unit.PX);
+                elH.getStyle().setLeft(nInnerX, Unit.PX);
                 elH.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(cursorX, Unit.PX);
+                elS.getStyle().setLeft(nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-cursorX - 1, Unit.PX);
+                elImg.getStyle().setLeft(-nInnerX, Unit.PX);
 
                 el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
