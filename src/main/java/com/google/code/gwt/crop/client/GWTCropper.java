@@ -96,9 +96,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     // settings
     private double aspectRatio = 0;
 
-    // minimum size of height or width. Just to prevent selection area to be shrunk to a dot
     private final int HANDLE_SIZE = this.bundleResources.css().handleSize();
     private final int SELECTION_BORDER_SIZE = this.bundleResources.css().borderSize();
+
+    // minimum size of height or width. Just to prevent selection area to be shrunk to a dot
     private int MIN_WIDTH = this.HANDLE_SIZE;
     private int MIN_HEIGHT = this.HANDLE_SIZE;
 
@@ -175,6 +176,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
         this.aspectRatio = aspectRatio;
     }
 
+    /**
+     * Returns current aspect ratio.
+     *
+     * @return value between 0 and 1
+     */
     public double getAspectRatio() {
         return this.aspectRatio;
     }
@@ -189,7 +195,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      * @return X coordinate
      */
     public int getSelectionXCoordinate() {
-        return (int) ((this.nInnerX + this.SELECTION_BORDER_SIZE) * proportion);
+        return (int) (this.nInnerX * proportion);
     }
 
     /**
@@ -202,7 +208,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      * @return Y coordinate
      */
     public int getSelectionYCoordinate() {
-        return (int) ((this.nInnerY + this.SELECTION_BORDER_SIZE) * proportion);
+        return (int) (this.nInnerY * proportion);
     }
 
     /**
@@ -283,8 +289,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      *
      * @param x initial X coordinate. Will be ignored if it is out of a canvas.
      * @param y initial Y coordinate. Will be ignored if it is out of a canvas.
-     * @param width initial selection width in pixels (will be ignored, if bigger, than canvas width)
-     * @param height initial selection height in pixels (will be ignored if higher, than canvas height)
+     * @param width initial selection width in pixels (will be ignored, if longer than canvas width)
+     * @param height initial selection height in pixels (will be ignored if higher than canvas height)
      * @param shouldKeepAspectRatio if <code>true</code>, then initial aspect ratio will be used for the selection and it will keep it's shape;
      * if <code>false</code> then the selection could have any shape.
      */
@@ -351,7 +357,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     };
 
     /**
-     * Sets the cropper's width, height will computed with keeping image aspect ratio.
+     * Sets the cropper widget outer width, height will computed with keeping image aspect ratio.
      *
      * @param width integer in px
      */
@@ -390,7 +396,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     @Deprecated
     public void setSize(String width, String height) {
         super.setSize(width, height);
-    };
+    }
 
     /**
      * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview} widget.
@@ -399,7 +405,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      */
     public void registerPreviewWidget(IGWTCropperPreview previewWidget){
         this.previewWidget = previewWidget;
-    };
+    }
 
     // --------- private methods ------------
 
@@ -486,8 +492,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
             imgSelectionBg.getElement().getStyle().setPropertyPx("maxHeight", nOuterHeight);
         }
 
-        selectionContainer.add(imgSelectionBg, -this.nInnerX - 1,  -this.nInnerY - 1);
-        this._container.add(selectionContainer, this.nInnerX, this.nInnerY);
+        selectionContainer.add(imgSelectionBg, -this.nInnerX,  -this.nInnerY);
+        this._container.add(selectionContainer, this.nInnerX - SELECTION_BORDER_SIZE, this.nInnerY - SELECTION_BORDER_SIZE);
 
         this.buildSelectionArea();
 
@@ -671,21 +677,21 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
                 this.nInnerY = cursorY - offsetY;
 
                 // don't drag selection out of the canvas borders
-                if (this.nInnerX < -SELECTION_BORDER_SIZE) this.nInnerX = -SELECTION_BORDER_SIZE;
-                if (this.nInnerY < -SELECTION_BORDER_SIZE) this.nInnerY = -SELECTION_BORDER_SIZE;
-                if (this.nInnerX + this.nInnerWidth > this.nOuterWidth + SELECTION_BORDER_SIZE) this.nInnerX = this.nOuterWidth - this.nInnerWidth + SELECTION_BORDER_SIZE;
-                if (this.nInnerY + this.nInnerHeight > this.nOuterHeight + SELECTION_BORDER_SIZE) this.nInnerY = this.nOuterHeight - this.nInnerHeight + SELECTION_BORDER_SIZE;
+                if (this.nInnerX < 0) this.nInnerX = 0;
+                if (this.nInnerY < 0) this.nInnerY = 0;
+                if (this.nInnerX + this.nInnerWidth > this.nOuterWidth) this.nInnerX = this.nOuterWidth - this.nInnerWidth;
+                if (this.nInnerY + this.nInnerHeight > this.nOuterHeight) this.nInnerY = this.nOuterHeight - this.nInnerHeight;
 
                 elH.getStyle().setLeft(this.nInnerX, Unit.PX);
                 elH.getStyle().setTop(this.nInnerY, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(this.nInnerX, Unit.PX);
-                elS.getStyle().setTop(this.nInnerY, Unit.PX);
+                elS.getStyle().setLeft(this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
+                elS.getStyle().setTop(this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
-                elImg.getStyle().setTop(-this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
+                elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+                elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
                 break;
 
 
@@ -752,14 +758,14 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(this.nInnerX, Unit.PX);
-                elS.getStyle().setTop(this.nInnerY, Unit.PX);
+                elS.getStyle().setLeft(this.nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
+                elS.getStyle().setTop(this.nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-this.nInnerX - 1, Unit.PX);
-                elImg.getStyle().setTop(-this.nInnerY - 1, Unit.PX);
+                elImg.getStyle().setLeft(-this.nInnerX, Unit.PX);
+                elImg.getStyle().setTop(-this.nInnerY, Unit.PX);
 
                 Element el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
@@ -824,17 +830,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
                 elH = this.handlesContainer.getElement();
 
-                elH.getStyle().setTop(cursorY, Unit.PX);
+                elH.getStyle().setTop(nInnerY, Unit.PX);
                 elH.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setTop(cursorY, Unit.PX);
+                elS.getStyle().setTop(nInnerY - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setTop(-cursorY - 1, Unit.PX);
+                elImg.getStyle().setTop(-nInnerY, Unit.PX);
 
                 el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
@@ -900,17 +906,17 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
 
                 elH = this.handlesContainer.getElement();
 
-                elH.getStyle().setLeft(cursorX, Unit.PX);
+                elH.getStyle().setLeft(nInnerX, Unit.PX);
                 elH.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elH.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elS = this.selectionContainer.getElement();
-                elS.getStyle().setLeft(cursorX, Unit.PX);
+                elS.getStyle().setLeft(nInnerX - SELECTION_BORDER_SIZE, Unit.PX);
                 elS.getStyle().setWidth(nInnerWidth, Unit.PX);
                 elS.getStyle().setHeight(nInnerHeight, Unit.PX);
 
                 elImg = ((Image) this.selectionContainer.getWidget(0)).getElement();
-                elImg.getStyle().setLeft(-cursorX - 1, Unit.PX);
+                elImg.getStyle().setLeft(-nInnerX, Unit.PX);
 
                 el3 = this.draggableBackground.getElement();
                 el3.getStyle().setWidth(nInnerWidth, Unit.PX);
