@@ -1,5 +1,6 @@
 # Changelog
 
+ * *0.5.4* Corrected gathering of the selection coordinates. [Pull request 24](https://github.com/w32blaster/gwt-cropper/pull/24). Thanks to @thoepfner !
  * *0.5.3.1* Now you can scale whole cropper widget and the selection will be functioning accordingly [Pull request 23](https://github.com/w32blaster/gwt-cropper/pull/23). Thanks @enginer!
  * *0.5.2* New [Constrained Cropper Preview](https://github.com/w32blaster/gwt-cropper/blob/master/src/main/java/com/google/code/gwt/crop/client/GWTConstrainedCropperPreview.java) widget [was added](https://github.com/w32blaster/gwt-cropper/pull/22). Thanks to @thoepfner 
  * *0.5.1* The harvesting of the selection position [is calibrated](https://github.com/w32blaster/gwt-cropper/issues/18).

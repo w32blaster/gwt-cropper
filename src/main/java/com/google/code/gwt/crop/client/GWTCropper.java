@@ -96,9 +96,10 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     // settings
     private double aspectRatio = 0;
 
-    // minimum size of height or width. Just to prevent selection area to be shrunk to a dot
     private final int HANDLE_SIZE = this.bundleResources.css().handleSize();
     private final int SELECTION_BORDER_SIZE = this.bundleResources.css().borderSize();
+
+    // minimum size of height or width. Just to prevent selection area to be shrunk to a dot
     private int MIN_WIDTH = this.HANDLE_SIZE;
     private int MIN_HEIGHT = this.HANDLE_SIZE;
 
@@ -175,6 +176,11 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
         this.aspectRatio = aspectRatio;
     }
 
+    /**
+     * Returns current aspect ratio.
+     *
+     * @return value between 0 and 1
+     */
     public double getAspectRatio() {
         return this.aspectRatio;
     }
@@ -283,8 +289,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      *
      * @param x initial X coordinate. Will be ignored if it is out of a canvas.
      * @param y initial Y coordinate. Will be ignored if it is out of a canvas.
-     * @param width initial selection width in pixels (will be ignored, if bigger, than canvas width)
-     * @param height initial selection height in pixels (will be ignored if higher, than canvas height)
+     * @param width initial selection width in pixels (will be ignored, if longer than canvas width)
+     * @param height initial selection height in pixels (will be ignored if higher than canvas height)
      * @param shouldKeepAspectRatio if <code>true</code>, then initial aspect ratio will be used for the selection and it will keep it's shape;
      * if <code>false</code> then the selection could have any shape.
      */
@@ -351,7 +357,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     };
 
     /**
-     * Sets the cropper's width, height will computed with keeping image aspect ratio.
+     * Sets the cropper widget outer width, height will computed with keeping image aspect ratio.
      *
      * @param width integer in px
      */
@@ -390,7 +396,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     @Deprecated
     public void setSize(String width, String height) {
         super.setSize(width, height);
-    };
+    }
 
     /**
      * Registers the {@link com.google.code.gwt.crop.client.GWTCropperPreview} widget.
@@ -399,7 +405,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      */
     public void registerPreviewWidget(IGWTCropperPreview previewWidget){
         this.previewWidget = previewWidget;
-    };
+    }
 
     // --------- private methods ------------
 
