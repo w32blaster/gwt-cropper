@@ -24,7 +24,7 @@ If you use [Maven](http://maven.apache.org/), you can add this dependency to you
       <dependency>
             <groupId>com.googlecode.gwt-cropper</groupId>
             <artifactId>gwt-crop</artifactId>
-            <version>0.5.3.1</version>
+            <version>0.5.4</version>
       </dependency>
 ```
 
