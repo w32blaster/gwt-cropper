@@ -1118,7 +1118,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
         if (x < 0) x = 0;
         if (x > this.nOuterWidth) x = this.nOuterWidth;
         if (y < 0) y = 0;
-        if (y > this.nOuterHeight) x = this.nOuterHeight;
+        if (y > this.nOuterHeight) y = this.nOuterHeight;
 
         this.provideDragging(x, y);
 
