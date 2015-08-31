@@ -64,8 +64,8 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
     private final ICropperStyleSource bundleResources = GWT.create(ICropperStyleSource.class);
 
     // canvas sizes
-    private int nOuterWidth = -1;
-    private int nOuterHeight = -1;
+    int nOuterWidth = -1;
+    int nOuterHeight = -1;
 
     // selection coordinates
     private int nInnerX = -1;
@@ -650,7 +650,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
      * @param cursorX - cursor X-position relatively the canvas
      * @param cursorY - cursor Y-position relatively the canvas
      */
-    private void provideDragging(int cursorX, int cursorY) {
+    void provideDragging(int cursorX, int cursorY) {
 
         Element elH = null; // handle's container
         Element elS = null; // selection's container
@@ -1118,7 +1118,7 @@ public class GWTCropper extends HTMLPanel implements MouseMoveHandler, MouseUpHa
         if (x < 0) x = 0;
         if (x > this.nOuterWidth) x = this.nOuterWidth;
         if (y < 0) y = 0;
-        if (y > this.nOuterHeight) x = this.nOuterHeight;
+        if (y > this.nOuterHeight) y = this.nOuterHeight;
 
         this.provideDragging(x, y);
 
