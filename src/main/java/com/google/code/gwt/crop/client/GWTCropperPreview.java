@@ -94,8 +94,9 @@ public class GWTCropperPreview extends SimplePanel implements IGWTCropperPreview
      * @param aspectRatio
      */
     public void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
-        if (embeddedImage != null) remove(embeddedImage);
-        
+        if (embeddedImage != null)
+            super.remove(embeddedImage);
+
         this.embeddedImage = new Image(imageUrl);
         
         this.cropCanvasWidth = canvasWidth;

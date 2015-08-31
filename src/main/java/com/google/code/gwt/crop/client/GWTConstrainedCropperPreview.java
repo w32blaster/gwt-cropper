@@ -12,77 +12,80 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * <b>GWTConstrainedCropperPreview</b> - widget that previews the selected area
  * in a panel whose size won't exceed the given dimensions.
  * </p>
- * 
+ *
  * @author Timo Hoepfner
  */
 public class GWTConstrainedCropperPreview extends SimplePanel implements IGWTCropperPreview {
-  private int maxWidth, maxHeight, canvasWidth, canvasHeight;
-  private Image image;
+    private int maxWidth, maxHeight, canvasWidth, canvasHeight;
+    private Image image;
 
-  /**
-   * Initiates the preview widget.
-   * 
-   * <p>
-   * Usage example: <code>new GWTConstrainedCropperPreview(100, 100)</code>
-   * constructs a preview, that will scale both horizontally and vertically, 
-   * but never exceed 100px in either dimension.
-   * </p>
-   * 
-   * <ul>
-   *    <li>For a square selection, both width and height are 100px.</li>
-   *    <li>For a landscape selection, the width is 100px and height is less than 100px.</li>
-   *    <li>For a portrait selection, the height is 100px and width is less than 100px.</li>
-   * </ul>
-   * 
-   * @param maxWidth
-   *          - maximum width in px
-   * @param maxHeight
-   *          - maximum height in px
-   */
-  @UiConstructor
-  public GWTConstrainedCropperPreview(int maxWidth, int maxHeight) {
-    this.maxWidth = maxWidth;
-    this.maxHeight = maxHeight;
+    /**
+     * Initiates the preview widget.
+     *
+     * <p>
+     * Usage example: <code>new GWTConstrainedCropperPreview(100, 100)</code>
+     * constructs a preview, that will scale both horizontally and vertically,
+     * but never exceed 100px in either dimension.
+     * </p>
+     *
+     * <ul>
+     *    <li>For a square selection, both width and height are 100px.</li>
+     *    <li>For a landscape selection, the width is 100px and height is less than 100px.</li>
+     *    <li>For a portrait selection, the height is 100px and width is less than 100px.</li>
+     * </ul>
+     *
+     * @param maxWidth
+     *          - maximum width in px
+     * @param maxHeight
+     *          - maximum height in px
+     */
+    @UiConstructor
+    public GWTConstrainedCropperPreview(int maxWidth, int maxHeight) {
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
 
-    getElement().getStyle().setPosition(Position.RELATIVE);
-    getElement().getStyle().setOverflow(Overflow.HIDDEN);
-  }
+        getElement().getStyle().setPosition(Position.RELATIVE);
+        getElement().getStyle().setOverflow(Overflow.HIDDEN);
+    }
 
-  public void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
+    public void init(String imageUrl, int canvasWidth, int canvasHeight, double aspectRatio) {
+        if (image != null)
+            super.remove(image);
 
-    image = new Image(imageUrl);
-    image.getElement().getStyle().setPosition(Position.ABSOLUTE);
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
 
-    add(image);
-  }
+        image = new Image(imageUrl);
+        image.getElement().getStyle().setPosition(Position.ABSOLUTE);
 
-  public void updatePreview(int selectionWidth, int selectionHeight, int cropLeft, int cropTop) {
-    double selectionRatio = (double) selectionWidth / selectionHeight;
-    double containerRatio = (double) maxWidth / maxHeight;
+        add(image);
+    }
 
-    double scale = selectionRatio < containerRatio
-        ? (double) selectionHeight / maxHeight
-        : (double) selectionWidth / maxWidth;
+    public void updatePreview(int selectionWidth, int selectionHeight, int cropLeft, int cropTop) {
+        double selectionRatio = (double) selectionWidth / selectionHeight;
+        double containerRatio = (double) maxWidth / maxHeight;
 
-    int containerWidth = (int) (selectionWidth / scale);
-    int containerHeight = (int) (selectionHeight / scale);
+        double scale = selectionRatio < containerRatio
+                ? (double) selectionHeight / maxHeight
+                : (double) selectionWidth / maxWidth;
 
-    setPixelSize(containerWidth, containerHeight);
+        int containerWidth = (int) (selectionWidth / scale);
+        int containerHeight = (int) (selectionHeight / scale);
 
-    double dimensionRatioX = (double) canvasWidth / selectionWidth;
-    double dimensionRatioY = (double) canvasHeight / selectionHeight;
-    double positionRatioX = (double) selectionWidth / containerWidth;
-    double positionRatioY = (double) selectionHeight / containerHeight;
+        setPixelSize(containerWidth, containerHeight);
 
-    int imageWidth = (int) (containerWidth * dimensionRatioX);
-    int imageHeight = (int) (containerHeight * dimensionRatioY);
-    int imageLeft = (int) -(cropLeft / positionRatioX);
-    int imageTop = (int) -(cropTop / positionRatioY);
+        double dimensionRatioX = (double) canvasWidth / selectionWidth;
+        double dimensionRatioY = (double) canvasHeight / selectionHeight;
+        double positionRatioX = (double) selectionWidth / containerWidth;
+        double positionRatioY = (double) selectionHeight / containerHeight;
 
-    image.setPixelSize(imageWidth, imageHeight);
-    image.getElement().getStyle().setLeft(imageLeft, Unit.PX);
-    image.getElement().getStyle().setTop(imageTop, Unit.PX);
-  }
+        int imageWidth = (int) (containerWidth * dimensionRatioX);
+        int imageHeight = (int) (containerHeight * dimensionRatioY);
+        int imageLeft = (int) -(cropLeft / positionRatioX);
+        int imageTop = (int) -(cropTop / positionRatioY);
+
+        image.setPixelSize(imageWidth, imageHeight);
+        image.getElement().getStyle().setLeft(imageLeft, Unit.PX);
+        image.getElement().getStyle().setTop(imageTop, Unit.PX);
+    }
 }
