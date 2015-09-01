@@ -24,7 +24,7 @@ If you use [Maven](http://maven.apache.org/), you can add this dependency to you
       <dependency>
             <groupId>com.googlecode.gwt-cropper</groupId>
             <artifactId>gwt-crop</artifactId>
-            <version>0.5.4</version>
+            <version>0.5.5</version>
       </dependency>
 ```
 
@@ -73,6 +73,7 @@ Take a look at the **TipsAndTricks Tips & tricks page** to see the most common i
 
 # Changelog
 
+ * *0.5.5* Small bugfixes ([Pull request 26](https://github.com/w32blaster/gwt-cropper/pull/26), [Pull request 27](https://github.com/w32blaster/gwt-cropper/pull/27)) 
  * *0.5.4* Corrected gathering of the selection coordinates. [Pull request 24](https://github.com/w32blaster/gwt-cropper/pull/24). Thanks to @thoepfner !
  * *0.5.3.1* Now you can scale whole cropper widget and the selection will be functioning accordingly [Pull request 23](https://github.com/w32blaster/gwt-cropper/pull/23). Thanks @enginer!
  * *0.5.2* New [Constrained Cropper Preview](https://github.com/w32blaster/gwt-cropper/blob/master/src/main/java/com/google/code/gwt/crop/client/GWTConstrainedCropperPreview.java) widget [was added](https://github.com/w32blaster/gwt-cropper/pull/22). Thanks to @thoepfner 
